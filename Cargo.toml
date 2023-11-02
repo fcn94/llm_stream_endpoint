@@ -1,0 +1,46 @@
+[package]
+name = "llm_stream"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1.1"
+tokio-util = { version = "0.7", features = ["io"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink"] }
+futures-channel = { version = "0.3.17", features = ["sink"]}
+warp = "0.3"
+hyper = { version = "0.14", features = ["stream", "server", "http1", "http2", "tcp", "client"] }
+
+bytes = "1.0"
+
+anyhow = { version = "1", features = ["backtrace"] }
+
+log = "0.4"
+pretty_env_logger = "0.5"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+
+# for candle
+candle={git="https://github.com/huggingface/candle.git" ,version = "0.3.0",branch='main', package = "candle-core"}
+candle-nn = { git="https://github.com/huggingface/candle.git",version = "0.3.0",branch='main' }
+candle-transformers = { git="https://github.com/huggingface/candle.git" ,branch='main' }
+candle-flash-attn = { git="https://github.com/huggingface/candle.git", version = "0.3.0",branch='main', optional = true }
+tokenizers = { version = "0.13.4", default-features = false ,features = ["onig"]}
+hf-hub = "0.3.0"
+
+# for candle tracing
+tracing = "0.1.37"
+tracing-chrome = "0.7.1"
+tracing-subscriber = "0.3.7"
+
+# for candle mkl feature
+intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
+libc = { version = "0.2.147" }
+
+
+[features]
+default = []
+mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
