@@ -20,12 +20,7 @@ pub const TEMPERATURE:Option<f64> = Some(0.2);
 pub const TOP_P:Option<f64> = Some(0.3);
 pub const SEED:u64 = 299792458;
 
-
 const MODEL_ID: &str = "lmz/candle-mistral";
-
-//const MODEL_ID_INIT: &str = "mistralai/Mistral-7B-v0.1";
-//const MODEL_ID: &str = "TheBloke/Arithmo-Mistral-7B-GGUF";
-
 
 const REVISION: &str= "main";
 const TOKENIZER_FILE: &str = "tokenizer.json";

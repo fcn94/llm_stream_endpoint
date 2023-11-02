@@ -47,7 +47,7 @@ async fn main() ->anyhow::Result<()> {
     let index_text= fs::read_to_string("./site/index.html")?;
 
 
-
+    // API route
     let routes = warp::path("token_stream")
         .and(warp::post())
         .and(prompt_json_body())
@@ -59,10 +59,9 @@ async fn main() ->anyhow::Result<()> {
 
             let llm_triple =(model.clone(), device.clone(), tokenizer.clone());
 
-         let _handler = thread::spawn(move || {
-	    	// thread code
-	    	let _ = generate(llm_triple.0, llm_triple.1, llm_triple.2, prompt.query.as_str(), SAMPLE_LEN,tx);
-		});
+            let _handler = thread::spawn(move || {
+                let _ = generate(llm_triple.0, llm_triple.1, llm_triple.2, prompt.query.as_str(), SAMPLE_LEN,tx);
+            });
 
          let event_stream = rx_stream.map(move |token| {
              Ok(Bytes::from(token))
@@ -74,13 +73,17 @@ async fn main() ->anyhow::Result<()> {
         .then(handler_stream);
 
 
-   let routes_index=warp::get().map(move || warp::reply::html(index_text.clone()));
+    // Route to retrieve the html page
+    let routes_index=warp::get().map(move || warp::reply::html(index_text.clone()));
 
     warp::serve(routes.or(routes_index)).run(([127, 0, 0, 1], 3030)).await;
 
     Ok(())
 }
 
+/*****************************************************************/
+// route handlers
+/*****************************************************************/
 
 async fn handler_stream(
     body: impl Stream<Item = Result< Bytes, Infallible>> + Unpin + Send + Sync + 'static,
@@ -89,9 +92,7 @@ async fn handler_stream(
     Ok(warp::reply::Response::new(body))
 }
 
-/*****************************************************************/
-// route to inject a single query
-/*****************************************************************/
+
 fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejection> + Clone {
     warp::body::content_length_limit(1024 * 16)
         .and(warp::body::json())
