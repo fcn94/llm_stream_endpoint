@@ -35,7 +35,6 @@ pub enum Model {
     Quantized(QMistral),
 }
 
-// https://huggingface.co/TheBloke/Arithmo-Mistral-7B-GGUF/resolve/main/arithmo-mistral-7b.Q4_K_S.gguf
 
 pub fn llm_initialize() -> Result<(Model,Device,Tokenizer)> {
     use tracing_chrome::ChromeLayerBuilder;
