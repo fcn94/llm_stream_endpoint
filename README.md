@@ -1,4 +1,6 @@
 # llm_stream_endpoint
+This repository is a minimal llm rust api streaming endpoint.
+
 I wanted to do a minimalist service to interact with a LLM, in a streaming mode
 
 I tested websockets and server sent events and bot were overkills
