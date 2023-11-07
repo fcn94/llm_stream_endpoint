@@ -65,9 +65,12 @@ impl TextGeneration {
         let start_gen = std::time::Instant::now();
 
         for index in 0..sample_len {
+
             let context_size = if index > 0 { 1 } else { tokens.len() };
+
             let start_pos = tokens.len().saturating_sub(context_size);
             let ctxt = &tokens[start_pos..];
+
             let input = Tensor::new(ctxt, &self.device)?.unsqueeze(0)?;
             let logits = match &mut self.model {
                 Model::Mistral(m) => m.forward(&input, start_pos)?,
@@ -95,6 +98,8 @@ impl TextGeneration {
                 let _ = tx.send(t.to_string());
             }
         }
+
+
         let dt = start_gen.elapsed();
 
         if let Some(rest) = self.tokenizer.decode_rest().map_err(E::msg)? {
@@ -109,6 +114,13 @@ impl TextGeneration {
         Ok(())
     }
 
+    fn execute_generation(&mut self, prompt: &str, sample_len: usize,tx:UnboundedSender<String>) -> Result<()> {
+
+
+
+
+        Ok(())
+    }
 }
 
 pub fn generate(model:Model, device:Device, tokenizer:Tokenizer, prompt:&str,sample_len:usize,tx:UnboundedSender<String>) -> Result<()> {
