@@ -35,8 +35,14 @@ pub enum Model {
     Quantized(QMistral),
 }
 
+#[derive( Debug,Clone)]
+pub struct Llm_Package {
+    pub model:Model,
+    pub device:Device,
+    pub tokenizer:Tokenizer,
+}
 
-pub fn llm_initialize() -> Result<(Model,Device,Tokenizer)> {
+pub fn llm_initialize() ->  Result<Llm_Package>  {
     use tracing_chrome::ChromeLayerBuilder;
     use tracing_subscriber::prelude::*;
 
@@ -115,5 +121,9 @@ pub fn llm_initialize() -> Result<(Model,Device,Tokenizer)> {
 
     println!("loaded the model in {:?}", start.elapsed());
 
-    Ok((model, device,tokenizer))
+    Ok(Llm_Package{
+        model,
+        device,
+        tokenizer,
+    })
 }
