@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 use llm_stream::llm::llm_initialization::{llm_initialize, Llm_Package};
 use llm_stream::llm::llm_mgt::generate;
 
+use llm_stream::args_init::args::Args;
 
 pub const SAMPLE_LEN:usize = 200;
 
@@ -66,21 +67,38 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Initialization Chain
     /**************************************************************/
-    // Todo : Ensure initialization by command line
+    // Todo : Ensure initialization by command line. This is first step. Still some work to be done
+    let args_init=Args::new();
+
     // Todo: Ensure connection to a specific gguf tokenizer/model
+
+    /**************************************************************/
+    // Model Selection Chain
+    /**************************************************************/
+    // Todo : We need to have a trait with two methods ( init, and generate)
+    // Todo : Use feature flags to select mistral, llama,...
+
+    /**************************************************************/
+    // Initialization of the demo web page
+    /**************************************************************/
+    // retrieves root html page
+    let index_text= fs::read_to_string("./site/index.html")?;
+    // Route to retrieve the html page
+    let routes_index=warp::get().map(move || warp::reply::html(index_text.clone()));
 
     /**************************************************************/
     // Initialization llm model
     /**************************************************************/
 
-    // Retrieve Model, Device, Tokenizer
+    // Retrieve llm package : Model, Device, Tokenizer
+    // Todo: Pass args
     let llm_package=llm_initialize().unwrap();
 
-    // retrieves root html page
-    let index_text= fs::read_to_string("./site/index.html")?;
+    /**************************************************************/
+    // Text Generation Route
+    /**************************************************************/
 
-    // API route
-    let routes = warp::path("token_stream")
+    let routes_generation = warp::path("token_stream")
         .and(warp::post())
         .and(prompt_json_body())
         .map( move |prompt :Prompt| {
@@ -108,11 +126,11 @@ async fn main() ->anyhow::Result<()> {
     })
         .then(handler_stream);
 
+    /**************************************************************/
+    // Launch Server
+    /**************************************************************/
 
-    // Route to retrieve the html page
-    let routes_index=warp::get().map(move || warp::reply::html(index_text.clone()));
-
-    warp::serve(routes.or(routes_index)).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routes_generation.or(routes_index)).run(([127, 0, 0, 1], 3030)).await;
 
     Ok(())
 }
@@ -134,7 +152,9 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
         .and(warp::body::json())
 }
 
-
+/*****************************************************************/
+// This will call the generate method for appropriate llm model
+/*****************************************************************/
 async fn process_generation(llm_package:Llm_Package,prompt:String,tx: UnboundedSender<String>) {
     let _ = generate(llm_package.model, llm_package.device, llm_package.tokenizer, prompt.as_str(), SAMPLE_LEN,tx);
 }
