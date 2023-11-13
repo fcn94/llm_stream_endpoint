@@ -24,11 +24,9 @@ use llm_stream::llm::llm_mgt::generate;
 
 use llm_stream::args_init::args::Args;
 
-pub const SAMPLE_LEN:usize = 200;
 
 const NB_WORKERS:usize = 2;
 
-const PROMPT: &str = "Where is Mona Lisa ?";
 
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct Prompt {
@@ -67,7 +65,6 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Initialization Chain
     /**************************************************************/
-    // Todo : Ensure initialization by command line. This is first step. Still some work to be done
     let args_init=Args::new();
 
     // Todo: Ensure connection to a specific gguf tokenizer/model
@@ -92,7 +89,7 @@ async fn main() ->anyhow::Result<()> {
 
     // Retrieve llm package : Model, Device, Tokenizer
     // Todo: Pass args
-    let llm_package=llm_initialize().unwrap();
+    let llm_package=llm_initialize(args_init).unwrap();
 
     /**************************************************************/
     // Text Generation Route
@@ -156,5 +153,5 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
 // This will call the generate method for appropriate llm model
 /*****************************************************************/
 async fn process_generation(llm_package:Llm_Package,prompt:String,tx: UnboundedSender<String>) {
-    let _ = generate(llm_package.model, llm_package.device, llm_package.tokenizer, prompt.as_str(), SAMPLE_LEN,tx);
+    let _ = generate(llm_package, prompt.as_str(),tx);
 }

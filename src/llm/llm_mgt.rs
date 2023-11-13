@@ -6,7 +6,7 @@ use tokenizers::Tokenizer;
 use crate::llm::token_output_stream::TokenOutputStream;
 use tokio::sync::mpsc::{UnboundedSender};
 
-use crate::llm::llm_initialization::{Model, REPEAT_LAST_N, REPEAT_PENALTY, SEED, TEMPERATURE, TOP_P};
+use crate::llm::llm_initialization::{Llm_Package, Model};
 
 struct TextGeneration {
     model: Model,
@@ -123,19 +123,19 @@ impl TextGeneration {
     }
 }
 
-pub fn generate(model:Model, device:Device, tokenizer:Tokenizer, prompt:&str,sample_len:usize,tx:UnboundedSender<String>) -> Result<()> {
+pub fn generate(llm_package:Llm_Package,prompt:&str,tx:UnboundedSender<String>) -> Result<()> {
 
     let mut pipeline = TextGeneration::new(
-        model,
-        tokenizer,
-        SEED,
-        TEMPERATURE,
-        TOP_P,
-       REPEAT_PENALTY,
-        REPEAT_LAST_N,
-        &device,
+        llm_package.model,
+        llm_package.tokenizer,
+        llm_package.seed,
+        Some(llm_package.temperature),
+        Some(llm_package.top_p),
+       llm_package.repeat_penalty,
+        llm_package.repeat_last_n,
+        &llm_package.device,
     );
-    pipeline.run(prompt, sample_len,tx)?;
+    pipeline.run(prompt, llm_package.sample_len,tx)?;
     Ok(())
 }
 

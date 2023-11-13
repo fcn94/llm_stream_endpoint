@@ -10,24 +10,9 @@ use candle::{DType, Device};
 use candle_nn::VarBuilder;
 use hf_hub::{api::sync::Api, Repo, RepoType};
 use tokenizers::Tokenizer;
+use crate::args_init::args::Args;
 use crate::llm::device::device;
 
-
-const CPU:bool = true;
-const TRACING:bool = false;
-const USE_FLASH_ATTENTION:bool = true;
-pub const TEMPERATURE:Option<f64> = Some(0.2);
-pub const TOP_P:Option<f64> = Some(0.3);
-pub const SEED:u64 = 299792458;
-
-const MODEL_ID: &str = "lmz/candle-mistral";
-
-const REVISION: &str= "main";
-const TOKENIZER_FILE: &str = "tokenizer.json";
-const WEIGHTS_FILE:Option< &str> = None;
-const QUANTIZED:bool = true;
-pub const REPEAT_PENALTY:f32 = 1.1;
-pub const REPEAT_LAST_N:usize = 64;
 
 #[derive(Debug, Clone)]
 pub enum Model {
@@ -40,13 +25,21 @@ pub struct Llm_Package {
     pub model:Model,
     pub device:Device,
     pub tokenizer:Tokenizer,
+    pub seed:u64,
+    pub temperature:f64,
+    pub top_p:f64,
+    pub repeat_penalty:f32,
+    pub repeat_last_n:usize,
+    pub sample_len:usize,
 }
 
-pub fn llm_initialize() ->  Result<Llm_Package>  {
+
+pub fn llm_initialize(args_init:Args) ->  Result<Llm_Package>  {
     use tracing_chrome::ChromeLayerBuilder;
     use tracing_subscriber::prelude::*;
 
-    let _guard = if TRACING {
+
+    let _guard = if args_init.tracing {
         let (chrome_layer, guard) = ChromeLayerBuilder::new().build();
         tracing_subscriber::registry().with(chrome_layer).init();
         Some(guard)
@@ -62,9 +55,9 @@ pub fn llm_initialize() ->  Result<Llm_Package>  {
     );
     println!(
         "temp: {:.2} repeat-penalty: {:.2} repeat-last-n: {}",
-        TEMPERATURE.unwrap_or(0.),
-        REPEAT_PENALTY,
-        REPEAT_LAST_N
+        args_init.temperature,
+        args_init.repeat_penalty,
+        args_init.repeat_last_n
     );
 
     let start = std::time::Instant::now();
@@ -72,20 +65,20 @@ pub fn llm_initialize() ->  Result<Llm_Package>  {
 
 
     let repo = api.repo(Repo::with_revision(
-        MODEL_ID.to_string(),
+        args_init.model_id,
         RepoType::Model,
-        REVISION.to_string(),
+        args_init.revision,
     ));
 
-    let tokenizer_filename = repo.get(TOKENIZER_FILE)?;
+    let tokenizer_filename = repo.get(args_init.tokenizer_file.as_str())?;
 
-    let filenames = match WEIGHTS_FILE {
+    let filenames = match args_init.weight_files {
         Some(files) => files
             .split(',')
             .map(std::path::PathBuf::from)
             .collect::<Vec<_>>(),
         None => {
-            if QUANTIZED {
+            if args_init.quantized {
                 vec![repo.get("model-q4k.gguf")?]
                 //vec![repo.get("arithmo-mistral-7b.Q4_K_S.gguf")?]
             } else {
@@ -101,14 +94,14 @@ pub fn llm_initialize() ->  Result<Llm_Package>  {
     let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;
 
     let start = std::time::Instant::now();
-    let config = Config::config_7b_v0_1(USE_FLASH_ATTENTION);
-    let (model, device) = if QUANTIZED {
+    let config = Config::config_7b_v0_1(args_init.use_flash_attn);
+    let (model, device) = if args_init.quantized {
         let filename = &filenames[0];
         let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
         let model = QMistral::new(&config, vb)?;
         (Model::Quantized(model), Device::Cpu)
     } else {
-        let device = device(CPU)?;
+        let device = device(args_init.cpu)?;
         let dtype = if device.is_cuda() {
             DType::BF16
         } else {
@@ -125,5 +118,11 @@ pub fn llm_initialize() ->  Result<Llm_Package>  {
         model,
         device,
         tokenizer,
+        seed: args_init.seed,
+        temperature: args_init.temperature,
+        top_p: args_init.top_p,
+        repeat_penalty: args_init.repeat_penalty,
+        repeat_last_n: args_init.repeat_last_n,
+        sample_len: args_init.sample_len,
     })
 }
