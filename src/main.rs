@@ -17,16 +17,14 @@ use futures_util::{Stream, StreamExt};
 use hyper::Body;
 use serde::{Deserialize, Serialize};
 
-
-// declared as pub
-use llm_stream::llm::llm_initialization::{llm_initialize, Llm_Package};
-use llm_stream::llm::llm_mgt::generate;
-
 use llm_stream::args_init::args::Args;
+use llm_stream::llm::llm::{LLM, LlmPackage,generate};
+
+// todo: to be put under feature
+use llm_stream::llm::mistral_llm::mistral_initialization::{ MistralLlm};
 
 
-const NB_WORKERS:usize = 2;
-
+const NB_WORKERS:usize = 4;
 
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct Prompt {
@@ -66,14 +64,13 @@ async fn main() ->anyhow::Result<()> {
     // Initialization Chain
     /**************************************************************/
     let args_init=Args::new();
-
     // Todo: Ensure connection to a specific gguf tokenizer/model
 
     /**************************************************************/
     // Model Selection Chain
     /**************************************************************/
     // Todo : We need to have a trait with two methods ( init, and generate)
-    // Todo : Use feature flags to select mistral, llama,...
+    // Todo : Use feature flags to select mistral_llm, llama,...
 
     /**************************************************************/
     // Initialization of the demo web page
@@ -89,7 +86,9 @@ async fn main() ->anyhow::Result<()> {
 
     // Retrieve llm package : Model, Device, Tokenizer
     // Todo: Pass args
-    let llm_package=llm_initialize(args_init).unwrap();
+    // these are features
+    let llm_initialize: Box<dyn LLM>=   Box::new(MistralLlm);
+    let llm_package=llm_initialize.initialize(args_init).unwrap();
 
     /**************************************************************/
     // Text Generation Route
@@ -152,6 +151,6 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
 /*****************************************************************/
 // This will call the generate method for appropriate llm model
 /*****************************************************************/
-async fn process_generation(llm_package:Llm_Package,prompt:String,tx: UnboundedSender<String>) {
+async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSender<String>) {
     let _ = generate(llm_package, prompt.as_str(),tx);
 }

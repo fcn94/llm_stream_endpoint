@@ -5,21 +5,17 @@ use candle_transformers::generation::LogitsProcessor;
 use tokenizers::Tokenizer;
 use crate::llm::token_output_stream::TokenOutputStream;
 use tokio::sync::mpsc::{UnboundedSender};
+use crate::llm::llm::TextGeneration;
 
-use crate::llm::llm_initialization::{Llm_Package, Model};
 
-struct TextGeneration {
-    model: Model,
-    device: Device,
-    tokenizer: TokenOutputStream,
-    logits_processor: LogitsProcessor,
-    repeat_penalty: f32,
-    repeat_last_n: usize,
-}
+use crate::llm::mistral_llm::mistral_initialization::{ Model};
+
+
+
 
 impl TextGeneration {
     #[allow(clippy::too_many_arguments)]
-    fn new(
+    pub(crate) fn new(
         model: Model,
         tokenizer: Tokenizer,
         seed: u64,
@@ -42,7 +38,7 @@ impl TextGeneration {
         }
     }
 
-    fn run(&mut self, prompt: &str, sample_len: usize,tx:UnboundedSender<String>) -> Result<()> {
+    pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>) -> Result<()> {
         use std::io::Write;
         self.tokenizer.clear();
 
@@ -114,28 +110,11 @@ impl TextGeneration {
         Ok(())
     }
 
-    fn execute_generation(&mut self, prompt: &str, sample_len: usize,tx:UnboundedSender<String>) -> Result<()> {
 
-
-
-
-        Ok(())
-    }
 }
 
-pub fn generate(llm_package:Llm_Package,prompt:&str,tx:UnboundedSender<String>) -> Result<()> {
 
-    let mut pipeline = TextGeneration::new(
-        llm_package.model,
-        llm_package.tokenizer,
-        llm_package.seed,
-        Some(llm_package.temperature),
-        Some(llm_package.top_p),
-       llm_package.repeat_penalty,
-        llm_package.repeat_last_n,
-        &llm_package.device,
-    );
-    pipeline.run(prompt, llm_package.sample_len,tx)?;
-    Ok(())
-}
+
+
+
 
