@@ -45,3 +45,5 @@ libc = { version = "0.2.147" }
 [features]
 default = []
 mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
+mistral = []
+puffin = []

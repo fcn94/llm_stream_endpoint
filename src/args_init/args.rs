@@ -31,8 +31,12 @@ pub struct Args {
     #[arg(long, short = 'n', default_value_t = 200)]
     pub sample_len: usize,
 
-    // todo : should we manage a path of a gguf file, or via a feature
+    #[cfg(feature = "mistral")]
     #[arg(long, default_value = "lmz/candle-mistral")]
+    pub model_id: String,
+
+    #[cfg(feature = "puffin")]
+    #[arg(long, default_value = "lmz/candle-quantized-phi")]
     pub model_id: String,
 
     #[arg(long, default_value = "main")]

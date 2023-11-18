@@ -15,12 +15,22 @@ It is a very simple Rest Streaming Endpoint using :
 * Candle
 
 It does not cover GPU, only CPU ( eventhough GPU adjustments should be straightforwards)
-It uses a quantized version of Mistral 
+It uses mistral or phi-puffin
+
 
 # How to use the service
 
+>*** IMPORTANT CHANGE ***
+>
+>***The selection is activated by a feature, either mistral or puffin***
+
+
 To run it, just type
-> cargo run --release
+> cargo run --release --features mistral
+> 
+> or
+> 
+> cargo run --release --features puffin
 
 Once launched, to use the API, you can
 * From a linux terminal, use curl
@@ -38,7 +48,7 @@ I am eager to get feedbacks, about potential technical mistakes I may have gone 
 # ROADMAP
 I am planning to have a service that would make it easier to connect to different models
 
-
+I will enable injection of a system prompt, and proper formatting of prompt depending on the model
 
 
 # References

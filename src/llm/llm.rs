@@ -7,8 +7,11 @@ use crate::llm::token_output_stream::TokenOutputStream;
 use crate::args_init::args::Args;
 
 // todo: to be put under feature to spot right LLM
+#[cfg(feature = "mistral")]
 use crate::llm::mistral_llm::mistral_initialization::Model;
 
+#[cfg(feature = "puffin")]
+use crate::llm::puffin_llm::puffin_initialization::Model;
 
 
 #[derive( Debug,Clone)]

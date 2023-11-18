@@ -21,7 +21,12 @@ use llm_stream::args_init::args::Args;
 use llm_stream::llm::llm::{LLM, LlmPackage,generate};
 
 // todo: to be put under feature
+#[cfg(feature = "mistral")]
 use llm_stream::llm::mistral_llm::mistral_initialization::{ MistralLlm};
+
+#[cfg(feature = "puffin")]
+use llm_stream::llm::puffin_llm::puffin_initialization::{ MistralLlm};
+
 
 
 const NB_WORKERS:usize = 4;
