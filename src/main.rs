@@ -22,10 +22,10 @@ use llm_stream::llm::llm::{LLM, LlmPackage,generate};
 
 // todo: to be put under feature
 #[cfg(feature = "mistral")]
-use llm_stream::llm::mistral_llm::mistral_initialization::{ MistralLlm};
+use llm_stream::llm::mistral_llm::mistral_initialization::{LlmModel};
 
 #[cfg(feature = "puffin")]
-use llm_stream::llm::puffin_llm::puffin_initialization::{ MistralLlm};
+use llm_stream::llm::puffin_llm::puffin_initialization::{LlmModel};
 
 
 
@@ -35,7 +35,6 @@ const NB_WORKERS:usize = 4;
 pub struct Prompt {
     pub query: String,
 }
-
 
 #[tokio::main]
 async fn main() ->anyhow::Result<()> {
@@ -74,8 +73,13 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Model Selection Chain
     /**************************************************************/
-    // Todo : We need to have a trait with two methods ( init, and generate)
-    // Todo : Use feature flags to select mistral_llm, llama,...
+    let llm_initialize: Box<dyn LLM>=   Box::new(LlmModel);
+
+    /**************************************************************/
+    // Initialization llm model
+    /**************************************************************/
+    // Retrieve llm package : Model, Device, Tokenizer
+    let llm_package=llm_initialize.initialize(args_init).unwrap();
 
     /**************************************************************/
     // Initialization of the demo web page
@@ -84,16 +88,6 @@ async fn main() ->anyhow::Result<()> {
     let index_text= fs::read_to_string("./site/index.html")?;
     // Route to retrieve the html page
     let routes_index=warp::get().map(move || warp::reply::html(index_text.clone()));
-
-    /**************************************************************/
-    // Initialization llm model
-    /**************************************************************/
-
-    // Retrieve llm package : Model, Device, Tokenizer
-    // Todo: Pass args
-    // these are features
-    let llm_initialize: Box<dyn LLM>=   Box::new(MistralLlm);
-    let llm_package=llm_initialize.initialize(args_init).unwrap();
 
     /**************************************************************/
     // Text Generation Route

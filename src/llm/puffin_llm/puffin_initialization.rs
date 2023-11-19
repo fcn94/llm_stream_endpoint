@@ -24,9 +24,9 @@ pub enum Model {
 
 
 
-pub struct MistralLlm;
+pub struct LlmModel;
 
-impl LLM for MistralLlm {
+impl LLM for LlmModel {
     fn initialize(&self, args_init: Args) -> Result<LlmPackage> {
         use tracing_chrome::ChromeLayerBuilder;
         use tracing_subscriber::prelude::*;
