@@ -1,5 +1,6 @@
 #![feature(const_trait_impl)]
 
+use std::path::PathBuf;
 use anyhow::{Error as E, Result};
 
 
@@ -9,6 +10,7 @@ use candle_transformers::models::quantized_mixformer::MixFormerSequentialForCaus
 use candle::{DType, Device};
 use candle_nn::VarBuilder;
 use hf_hub::{api::sync::Api, Repo, RepoType};
+use hf_hub::api::sync::ApiRepo;
 use tokenizers::Tokenizer;
 use crate::args_init::args::Args;
 use crate::llm::device::device;
@@ -28,6 +30,11 @@ pub struct LlmModel;
 
 impl LLM for LlmModel {
     fn initialize(&self, args_init: Args) -> Result<LlmPackage> {
+
+        /**********************************************************************/
+        // Tracing Initialization
+        /**********************************************************************/
+
         use tracing_chrome::ChromeLayerBuilder;
         use tracing_subscriber::prelude::*;
 
@@ -52,9 +59,16 @@ impl LLM for LlmModel {
             args_init.repeat_last_n
         );
 
-        let start = std::time::Instant::now();
-        let api = Api::new()?;
+        /**********************************************************************/
+        // End Initialization
+        /**********************************************************************/
 
+        /**********************************************************************/
+        // Retrieve Model Files
+        /**********************************************************************/
+        let start = std::time::Instant::now();
+
+        let api = Api::new()?;
 
         let repo = api.repo(Repo::with_revision(
             args_init.model_id,
@@ -64,28 +78,23 @@ impl LLM for LlmModel {
 
         let tokenizer_filename = repo.get(args_init.tokenizer_file.as_str())?;
 
-        let filenames = match args_init.weight_files {
-            Some(files) => files
-                .split(',')
-                .map(std::path::PathBuf::from)
-                .collect::<Vec<_>>(),
-            None => {
-                if args_init.quantized {
-                    vec![repo.get("model-phi-hermes-1_3B-q4k.gguf")?]
-                } else {
-                    vec![
-                        repo.get("model-phi-hermes-1_3B.safetensors")?
-                    ]
-                }
-            }
-        };
-
-
+        let filenames= get_filenames_model(&repo, args_init.weight_files, args_init.quantized)?;
         println!("retrieved the files in {:?}", start.elapsed());
+
+        /**********************************************************************/
+        // End Retrieval Model Files
+        /**********************************************************************/
+
+        /**********************************************************************/
+        // Construction LLM Package
+        /**********************************************************************/
+
         let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;
 
         let start = std::time::Instant::now();
         let config = Config::phi_hermes_1_3b();
+
+
         let (model, device) = if args_init.quantized {
             let filename = &filenames[0];
             let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
@@ -103,6 +112,9 @@ impl LLM for LlmModel {
             (Model::MixFormer(model), device)
         };
 
+        /**********************************************************************/
+        // End Construction LLM Package
+        /**********************************************************************/
 
 
 
@@ -124,3 +136,20 @@ impl LLM for LlmModel {
 
 }
 
+fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:bool) -> Result<Vec<PathBuf>> {
+    Ok(match weight_files {
+        Some(files) => files
+            .split(',')
+            .map(std::path::PathBuf::from)
+            .collect::<Vec<_>>(),
+        None => {
+            if quantized {
+                vec![repo.get("model-phi-hermes-1_3B-q4k.gguf")?]
+            } else {
+                vec![
+                    repo.get("model-phi-hermes-1_3B.safetensors")?
+                ]
+            }
+        }
+    })
+}
