@@ -25,16 +25,7 @@ pub struct LlmModel;
 
 impl LLM for LlmModel {
     fn initialize(&self, args_init: Args) -> Result<LlmPackage> {
-        use tracing_chrome::ChromeLayerBuilder;
-        use tracing_subscriber::prelude::*;
 
-        let _guard = if args_init.tracing {
-            let (chrome_layer, guard) = ChromeLayerBuilder::new().build();
-            tracing_subscriber::registry().with(chrome_layer).init();
-            Some(guard)
-        } else {
-            None
-        };
         println!(
             "avx: {}, neon: {}, simd128: {}, f16c: {}",
             candle::utils::with_avx(),

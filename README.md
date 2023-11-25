@@ -32,12 +32,25 @@ To run it, just type
 > 
 > cargo run --release --features puffin
 
-Once launched, to use the API, you can
-* From a linux terminal, use curl
-  * curl -X POST -H "Content-Type: application/json" --no-buffer 'http://127.0.0.1:3030/token_stream' -d '{"query":"Where is located Paris ?"}'
-* From a browser, a very simple UI is available at :
-  * http://127.0.0.1:3030/
+Using RUSTFLAGS to activate some features like AVX2
+> RUSTFLAGS="-C target-feature=+avx2" cargo run --release --features puffin  -- --temperature 0.1
 
+And get these logs at launch, in my case
+> avx: true, neon: false, simd128: false, f16c: false
+>
+> temp: 0.10 repeat-penalty: 1.10 repeat-last-n: 64
+>
+> retrieved the files in 102.103µs
+> loaded the model in 558.235206ms
+
+
+Once launched, to use the API, you can
+> * From a linux terminal, use curl
+>  * curl -X POST -H "Content-Type: application/json" --no-buffer 'http://127.0.0.1:3030/token_stream' -d '{"query":"Where is located Paris ?"}'
+> * From a browser, a very simple UI is available at :
+>  * http://127.0.0.1:3030/
+
+  
 # What I am looking for
 
 I wanted to do a minimalistic service to interact with an LLM in a streaming mode
