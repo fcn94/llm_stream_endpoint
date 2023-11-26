@@ -9,15 +9,23 @@ edition = "2021"
 candle={git="https://github.com/huggingface/candle.git" ,branch='main', package = "candle-core"}
 candle-nn = { git="https://github.com/huggingface/candle.git",branch='main' }
 candle-transformers = { git="https://github.com/huggingface/candle.git" ,branch='main' }
-candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='main', optional = true }
+#candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='main', optional = true }
 
 # for huggingface
-hf-hub = "0.3.0"
+hf-hub = { version="0.3.0", features=["tokio"]}
 tokenizers = { version = "0.13.4", default-features = false ,features = ["onig"]}
-half = { version = "2.3.1", features = ["num-traits", "use-intrinsics", "rand_distr"] }
-rayon = "1.7.0"
-safetensors = "0.3.1"
-num-traits = "0.2.15"
+#half = { version = "2.3.1", features = ["num-traits", "use-intrinsics", "rand_distr"],optional=true }
+#rayon = "1.7.0"
+#safetensors = "0.3.1"
+#num-traits = "0.2.15"
+
+# for acceleration
+#accelerate-src = { version = "0.3.2" , optional = true}
+#intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
+# for mkl feature
+#libc = { version = "0.2.147" }
+#cudarc = { version = "0.9.14", features = ["f16"],optional=true }
+
 
 # for warp layer
 warp = "0.3"
@@ -29,50 +37,45 @@ tokio-util = { version = "0.7", features = ["io"] }
 futures-util = { version = "0.3", default-features = false, features = ["sink"] }
 futures-channel = { version = "0.3.17", features = ["sink"]}
 
-# for acceleration
-accelerate-src = { version = "0.3.2" , optional = true}
-intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
-cudarc = { version = "0.9.14", features = ["f16"],optional=true }
-
-# for candle mkl feature
-libc = { version = "0.2.147" }
 
 # various other
 anyhow = { version = "1", features = ["backtrace"] }
 clap = { version = "4.2.4", features = ["derive"] }
 bytes = "1.0"
-log = "0.4"
-pretty_env_logger = "0.5"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0"
-
-
+#log = "0.4"
+#pretty_env_logger = "0.5"
 
 [dev-dependencies]
 #anyhow = { version = "1", features = ["backtrace"] }
-tokio = "1.29.1"
-byteorder = "1.4.3"
-gemm = { version = "0.16.6", features = ["wasm-simd128-enable"] }
-image = { version = "0.24.7", default-features = false, features = ["jpeg", "png"] }
-imageproc = { version = "0.23.0", default-features = false }
-memmap2 = { version = "0.7.1", features = ["stable_deref_trait"] }
-num_cpus = "1.15.0"
-parquet = { version = "45.0.0" }
-rand = "0.8.5"
-rand_distr = "0.4.3"
-rusttype = { version = "0.9", default-features = false }
-serde_plain = "1.0.2"
-thiserror = "1"
-wav = "1.0.0"
-yoke = { version = "0.7.2", features = ["derive"] }
-zip = { version = "0.6.6", default-features = false }
-metal = { version = "0.27.1", features = ["mps"], package="candle-metal" }
+#tokio = "1.29.1"
+#byteorder = "1.4.3"
+#gemm = { version = "0.16.15", features = ["wasm-simd128-enable"] }
+#image = { version = "0.24.7", default-features = false, features = ["jpeg", "png"] }
+#imageproc = { version = "0.23.0", default-features = false }
+#memmap2 = { version = "0.7.1", features = ["stable_deref_trait"] }
+#rand = "0.8.5"
+#rusttype = { version = "0.9", default-features = false }
+#num_cpus = "1.15.0"
+#parquet = { version = "45.0.0" }
+#rand_distr = "0.4.3"
+#serde_plain = "1.0.2"
+#thiserror = "1"
+#wav = "1.0.0"
+#yoke = { version = "0.7.2", features = ["derive"] }
+#zip = { version = "0.6.6", default-features = false }
+#metal = { version = "0.27.1", features = ["mps"], package="candle-metal" }
 
 
 
 [features]
 default = []
-accelerate = ["dep:accelerate-src", "candle/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
-mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
+#accelerate = ["dep:accelerate-src", "candle/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
+#mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
 mistral = []
 puffin = []
+#cuda = ["candle/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
+#cudnn = ["candle/cudnn"]
+#flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
+#nccl = ["cuda", "cudarc/nccl", "dep:half"]

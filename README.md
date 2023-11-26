@@ -20,20 +20,25 @@ It uses mistral or phi-puffin
 
 # How to use the service
 
->*** IMPORTANT CHANGE ***
+>*** RECENT CHANGES ***
 >
->***The selection is activated by a feature, either mistral or puffin***
-
+>***The selection of the model is activated by a feature, either mistral or puffin ( by default) ***
+>
+>*** A Makefile facilitates clean,build,run ***
 
 To run it, just type
-> cargo run --release --features mistral
+>To build with puffin , type :
+> 
+> *make build*
 > 
 > or
 > 
-> cargo run --release --features puffin
+> To build with mistral, type :
+> 
+> *make FEATURE=mistral build*
 
-Using RUSTFLAGS to activate some features like AVX2
-> RUSTFLAGS="-C target-feature=+avx2" cargo run --release --features puffin  -- --temperature 0.1
+Then, to run it, 
+> *make run*
 
 And get these logs at launch, in my case
 > avx: true, neon: false, simd128: false, f16c: false
@@ -55,7 +60,11 @@ Once launched, to use the API, you can
 
 I wanted to do a minimalistic service to interact with an LLM in a streaming mode
 
-I am eager to get feedbacks, about potential technical mistakes I may have gone through, and any potential suggestion of improvements
+I am eager to get feedbacks , about :
+* potential technical mistakes I may have gone through
+* any potential suggestion of improvements
+* adaptation to run on Apple
+* adaptation to run on CUDA
 
 
 # ROADMAP

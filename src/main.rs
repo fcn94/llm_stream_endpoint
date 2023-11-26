@@ -31,7 +31,6 @@ use llm_stream::llm::mistral_llm::mistral_initialization::{LlmModel};
 use llm_stream::llm::puffin_llm::puffin_initialization::{LlmModel};
 
 
-
 const NB_WORKERS:usize = 4;
 
 #[derive(Serialize, Deserialize, Debug,Clone)]
@@ -43,7 +42,7 @@ pub struct Prompt {
 async fn main() ->anyhow::Result<()> {
 
 
-    pretty_env_logger::init();
+    //pretty_env_logger::init();
 
     /**************************************************************/
     // Create a new Tokio runtime on a dedicated thread
