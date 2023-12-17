@@ -1,4 +1,4 @@
-FEATURE := puffin
+FEATURE := phi-v2
 
 # Check if processor supports AVX2 feature
 ifeq ($(shell grep avx2 /proc/cpuinfo | wc -l), 0)
@@ -18,8 +18,8 @@ ifeq ($(HAS_AVX2), no)
 endif
 
 build :
-ifeq ($(FEATURE), puffin)
-	$(RUSTFLAGS_CHAIN) cargo build --release --features puffin
+ifeq ($(FEATURE), phi-v2)
+	$(RUSTFLAGS_CHAIN) cargo build --release --features phi-v2
 else
 	$(RUSTFLAGS_CHAIN) cargo build --release --features mistral
 endif
@@ -29,4 +29,7 @@ run :
 
 clean :
 	cargo clean
+
+update :
+	cargo update
 

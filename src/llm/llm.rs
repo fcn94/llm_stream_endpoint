@@ -10,8 +10,8 @@ use crate::args_init::args::Args;
 #[cfg(feature = "mistral")]
 use crate::llm::mistral_llm::mistral_initialization::Model;
 
-#[cfg(feature = "puffin")]
-use crate::llm::puffin_llm::puffin_initialization::Model;
+#[cfg(feature = "phi-v2")]
+use crate::llm::phi_v2_llm::phi_v2_initialization::Model;
 
 
 #[derive( Debug,Clone)]

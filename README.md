@@ -15,7 +15,7 @@ It is a very simple Rest Streaming Endpoint using :
 * Candle
 
 It does not cover GPU, only CPU ( eventhough GPU adjustments should be straightforwards)
-It uses mistral or phi-puffin
+It uses mistral or phi-2
 
 
 # How to use the service
@@ -26,8 +26,18 @@ It uses mistral or phi-puffin
 >
 >*** A Makefile facilitates clean,build,run ***
 
+Prior to execution
+>To ensure you have latest crates , type :
+>
+> *make clean*
+> 
+> and then 
+> 
+> *make update*
+
+
 To run it, just type
->To build with puffin , type :
+>To build with Phi-2 , type :
 > 
 > *make build*
 > 

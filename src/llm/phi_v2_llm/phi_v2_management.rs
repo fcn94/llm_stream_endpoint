@@ -8,7 +8,7 @@ use tokio::sync::mpsc::{UnboundedSender};
 use crate::llm::llm::TextGeneration;
 
 
-use crate::llm::puffin_llm::puffin_initialization::{ Model};
+use crate::llm::phi_v2_llm::phi_v2_initialization::{ Model};
 
 
 

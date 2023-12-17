@@ -27,8 +27,8 @@ use llm_stream::llm::llm::{LLM, LlmPackage,generate};
 #[cfg(feature = "mistral")]
 use llm_stream::llm::mistral_llm::mistral_initialization::{LlmModel};
 
-#[cfg(feature = "puffin")]
-use llm_stream::llm::puffin_llm::puffin_initialization::{LlmModel};
+#[cfg(feature = "phi-v2")]
+use llm_stream::llm::phi_v2_llm::phi_v2_initialization::{LlmModel};
 
 
 const NB_WORKERS:usize = 4;
@@ -40,7 +40,6 @@ pub struct Prompt {
 
 #[tokio::main]
 async fn main() ->anyhow::Result<()> {
-
 
     //pretty_env_logger::init();
 
@@ -70,7 +69,6 @@ async fn main() ->anyhow::Result<()> {
     // Initialization Chain
     /**************************************************************/
     let args_init=Args::new();
-    // Todo: Ensure connection to a specific gguf tokenizer/model
 
     /**************************************************************/
     // Model Selection Chain

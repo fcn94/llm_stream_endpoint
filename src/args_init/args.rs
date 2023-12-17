@@ -35,7 +35,8 @@ pub struct Args {
     #[arg(long, default_value = "lmz/candle-mistral")]
     pub model_id: String,
 
-    #[cfg(feature = "puffin")]
+    #[cfg(feature = "phi-v2")]
+    //#[arg(long, default_value = "microsoft/phi-2")]
     #[arg(long, default_value = "lmz/candle-quantized-phi")]
     pub model_id: String,
 
