@@ -82,14 +82,12 @@ impl LLM for LlmModel {
         let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;
 
         let start = std::time::Instant::now();
-        //let config = Config::phi_hermes_1_3b();
         let config = Config::v2();
 
 
         let (model, device) = if args_init.quantized {
             let filename = &filenames[0];
             let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
-            //let model = QMixFormer::new(&config, vb)?;
             let model = QMixFormer::new_v2(&config, vb)?;
 
             (Model::Quantized(model), Device::Cpu)
@@ -101,7 +99,6 @@ impl LLM for LlmModel {
                 DType::F32
             };
             let vb = unsafe { VarBuilder::from_mmaped_safetensors(&filenames, dtype, &device)? };
-            //let model = MixFormer::new(&config, vb)?;
             let model = MixFormer::new_v2(&config, vb)?;
             (Model::MixFormer(model), device)
         };
@@ -138,10 +135,8 @@ fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:boo
             .collect::<Vec<_>>(),
         None => {
             if quantized {
-               // vec![repo.get("model-phi-hermes-1_3B-q4k.gguf")?]
                 vec![repo.get("model-v2-q4k.gguf")?]
             } else {
-                //vec![repo.get("model-phi-hermes-1_3B.safetensors")?]
                 vec![
                     repo.get("model-00001-of-00002.safetensors")?,
                     repo.get("model-00002-of-00002.safetensors")?,
