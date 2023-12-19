@@ -17,11 +17,18 @@ ifeq ($(HAS_AVX2), no)
   RUSTFLAGS_CHAIN :=
 endif
 
-build :
+build_flags :
 ifeq ($(FEATURE), phi-v2)
 	$(RUSTFLAGS_CHAIN) cargo build --release --features phi-v2
 else
 	$(RUSTFLAGS_CHAIN) cargo build --release --features mistral
+endif
+
+build :
+ifeq ($(FEATURE), phi-v2)
+	cargo build --release --features phi-v2
+else
+	cargo build --release --features mistral
 endif
 
 run :
