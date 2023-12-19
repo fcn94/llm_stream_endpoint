@@ -34,21 +34,26 @@ It uses mistral or phi-2
 > 
 > *make update*
 
-
-To run it, just type
->To build with Phi-2 , type :
+\
+\
+To build the service , just type
+> With Phi-2 , type :
 > 
 > *make build*
 > 
 > or
 > 
-> To build with mistral, type :
+> With mistral, type :
 > 
 > *make FEATURE=mistral build*
 
+\
+\
 Then, to run it, 
 > *make run*
 
+\
+\
 And get these logs at launch, in my x86
 > avx: true, neon: false, simd128: false, f16c: false
 >
@@ -58,6 +63,8 @@ And get these logs at launch, in my x86
 > loaded the model in 558.235206ms
 
 
+\
+\
 Once launched, to use the API, you can
 > * From a linux terminal, use curl
 >  * curl -X POST -H "Content-Type: application/json" --no-buffer 'http://127.0.0.1:3030/token_stream' -d '{"query":"Where is located Paris ?"}'
@@ -65,7 +72,8 @@ Once launched, to use the API, you can
 >  * http://127.0.0.1:3030/
 
 
-
+\
+\
 # References
 * This is heavily inspired by one of the example from candle repository
 https://github.com/huggingface/candle/tree/main/candle-examples/examples/mistral
