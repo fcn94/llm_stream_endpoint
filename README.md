@@ -20,14 +20,13 @@ It uses mistral or phi-2
 
 # How to use the service
 
->*** RECENT CHANGES ***
+> RECENT CHANGES
 >
->***The selection of the model is activated by a feature, either mistral or puffin ( by default) ***
+> The selection of the model is activated by a feature, either mistral or phi-2 ( by default) 
 >
->*** A Makefile facilitates clean,build,run ***
-
-Prior to execution
->To ensure you have latest crates , type :
+> A Makefile facilitates clean,update, build,run
+> 
+> Prior to execution , please run :
 >
 > *make clean*
 > 
@@ -50,7 +49,7 @@ To run it, just type
 Then, to run it, 
 > *make run*
 
-And get these logs at launch, in my case
+And get these logs at launch, in my x86
 > avx: true, neon: false, simd128: false, f16c: false
 >
 > temp: 0.10 repeat-penalty: 1.10 repeat-last-n: 64
@@ -65,22 +64,6 @@ Once launched, to use the API, you can
 > * From a browser, a very simple UI is available at :
 >  * http://127.0.0.1:3030/
 
-  
-# What I am looking for
-
-I wanted to do a minimalistic service to interact with an LLM in a streaming mode
-
-I am eager to get feedbacks , about :
-* potential technical mistakes I may have gone through
-* any potential suggestion of improvements
-* adaptation to run on Apple
-* adaptation to run on CUDA
-
-
-# ROADMAP
-I am planning to have a service that would make it easier to connect to different models
-
-I will enable injection of a system prompt, and proper formatting of prompt depending on the model
 
 
 # References
