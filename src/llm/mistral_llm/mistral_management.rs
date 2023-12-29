@@ -42,6 +42,9 @@ impl TextGeneration {
         use std::io::Write;
         self.tokenizer.clear();
 
+        // Text Generation Prompt for Mistral
+        let prompt=format!("<s>[INST]{}.[/INST]",prompt);
+
         let mut tokens = self
             .tokenizer
             .tokenizer()

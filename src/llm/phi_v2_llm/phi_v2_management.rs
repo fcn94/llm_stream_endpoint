@@ -42,6 +42,10 @@ impl TextGeneration {
         use std::io::Write;
         self.tokenizer.clear();
 
+        // Text Generation Prompt for phi-2
+        let prompt=format!("Instruct: {}.\nOutput:",prompt);
+
+
         let mut tokens = self
             .tokenizer
             .tokenizer()
