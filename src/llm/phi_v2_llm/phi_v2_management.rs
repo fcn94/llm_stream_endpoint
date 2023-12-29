@@ -42,6 +42,8 @@ impl TextGeneration {
         use std::io::Write;
         self.tokenizer.clear();
 
+        // todo: Manage context
+
         // Text Generation Prompt for phi-2
         let prompt=format!("Instruct: {}.\nOutput:",prompt);
 
