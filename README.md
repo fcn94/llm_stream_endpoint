@@ -1,21 +1,14 @@
 # llm_stream_endpoint
 This repository is a minimal llm rust api streaming endpoint.
 
-I wanted to do a minimalist service to interact with a LLM, in a streaming mode
+It is a  minimalist service to interact with a LLM, in a streaming mode.
 
-I tested websockets and server sent events and bot were overkills
-
-I finally opted for a simple HTTP streaming endpoint.
-
-This repository describes it in its simplistic form.
+It is mainly designed to run mistral or phi-2 quantized model, on a CPU
 
 It is a very simple Rest Streaming Endpoint using :
 * Rust
 * Warp
 * Candle
-
-It does not cover GPU, only CPU ( eventhough GPU adjustments should be straightforwards)
-It uses mistral or phi-2
 
 
 # How to use the service
@@ -69,8 +62,8 @@ Once launched, to use the API, you can
 > * From a browser, a very simple UI is available at :
 >  * http://127.0.0.1:3030/
 
-\
-\
+
+
 # New : You can now specify a custom model
 Provided these models are compatible with phi-2 or mistral , you can specify your own huggingface repo and quantized file
 \
@@ -80,8 +73,8 @@ Provided these models are compatible with phi-2 or mistral , you can specify you
 
 This is useful should you be willing to run a fine tuned version of either phi-2 or mistral
 
-\
-\
+
+
 # References
 * This is heavily inspired by one of the example from candle repository
 https://github.com/huggingface/candle/tree/main/candle-examples/examples/mistral
