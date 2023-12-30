@@ -71,12 +71,12 @@ Once launched, to use the API, you can
 
 \
 \
-# NEW : You can now specify a custom model
+# New : You can now specify a custom model
 Provided these models are compatible with phi-2 or mistral , you can specify your own huggingface repo and quantized file
 \
 > You can type
 > 
-> make run MODEL_REPO="YOUR CUSTOM HUGGINGFACE" MODEL_FILE="YOUR QUANTIZED FILE"
+> make run MODEL_REPO="YOUR CUSTOM HUGGINGFACE REPO" MODEL_FILE="YOUR QUANTIZED FILE"
 
 This is useful should you be willing to run a fine tuned version of either phi-2 or mistral
 
