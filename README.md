@@ -20,8 +20,7 @@ It uses mistral or phi-2
 
 # How to use the service
 
-> RECENT CHANGES
->
+
 > The selection of the model is activated by a feature, either mistral or phi-2 ( by default) 
 >
 > A Makefile facilitates clean,update, build,run
@@ -62,7 +61,6 @@ And get these logs at launch, in my x86
 > retrieved the files in 102.103µs
 > loaded the model in 558.235206ms
 
-
 \
 \
 Once launched, to use the API, you can
@@ -71,6 +69,16 @@ Once launched, to use the API, you can
 > * From a browser, a very simple UI is available at :
 >  * http://127.0.0.1:3030/
 
+\
+\
+# NEW : You can now specify a custom model
+Provided these models are compatible with phi-2 or mistral , you can specify your own huggingface repo and quantized file
+\
+> You can type
+> 
+> make run MODEL_REPO="YOUR CUSTOM HUGGINGFACE" MODEL_FILE="YOUR QUANTIZED FILE"
+
+This is useful should you be willing to run a fine tuned version of either phi-2 or mistral
 
 \
 \

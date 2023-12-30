@@ -68,7 +68,7 @@ impl LLM for LlmModel {
 
         let tokenizer_filename = repo.get(args_init.tokenizer_file.as_str())?;
 
-        let filenames= get_filenames_model(&repo, args_init.weight_files, args_init.quantized)?;
+        let filenames= get_filenames_model(&repo, args_init.weight_files, args_init.quantized,args_init.model_file)?;
         println!("retrieved the files in {:?}", start.elapsed());
 
         /**********************************************************************/
@@ -127,7 +127,7 @@ impl LLM for LlmModel {
 
 }
 
-fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:bool) -> Result<Vec<PathBuf>> {
+fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:bool,model_file:Option<String>) -> Result<Vec<PathBuf>> {
     Ok(match weight_files {
         Some(files) => files
             .split(',')
@@ -135,7 +135,7 @@ fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:boo
             .collect::<Vec<_>>(),
         None => {
             if quantized {
-                vec![repo.get("model-v2-q4k.gguf")?]
+                vec![repo.get(model_file.unwrap().as_str())?]
             } else {
                 vec![
                     repo.get("model-00001-of-00002.safetensors")?,
