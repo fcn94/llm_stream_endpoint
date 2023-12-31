@@ -2,6 +2,8 @@ FEATURE := phi-v2
 
 # Enable to define a customized repo
 MODEL_REPO :=
+# Enable to define a customized repo
+TOKENIZER_REPO :=
 # Enable to define a customized quantized model
 MODEL_FILE :=
 
@@ -17,9 +19,9 @@ else
 endif
 
 run :
-	@if [ -n "$(MODEL_REPO)" -a -n "$(MODEL_FILE)"  ]; then \
-  		echo "Building using Repo: $(MODEL_REPO) and file: $(MODEL_FILE)"; \
-		./target/release/llm_stream --quantized --temperature 0.1 --model-id=$(MODEL_REPO) --model-file=$(MODEL_FILE); \
+	@if [ -n "$(MODEL_REPO)" -a -n "$(MODEL_FILE)" -a -n "$(TOKENIZER_REPO)"  ]; then \
+  		echo "Building using Model Repo: $(MODEL_REPO) and Model file: $(MODEL_FILE) and Tokenizer Repo :  $(TOKENIZER_REPO) "; \
+		./target/release/llm_stream --quantized --temperature 0.1 --model-id=$(MODEL_REPO) --model-file=$(MODEL_FILE) --tokenizer-id=$(TOKENIZER_REPO); \
     else \
        echo "Building using default Value for $(FEATURE)";\
        ./target/release/llm_stream --quantized --temperature 0.1; \

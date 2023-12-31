@@ -46,7 +46,16 @@ pub struct Args {
     //#[arg(long)]
     #[arg(long, default_value = "model-v2-q4k.gguf")]
     pub model_file: Option<String>,
-    
+
+    #[cfg(feature = "mistral")]
+    #[arg(long, default_value = "lmz/candle-mistral")]
+    pub tokenizer_id: String,
+
+    #[cfg(feature = "phi-v2")]
+    //#[arg(long, default_value = "microsoft/phi-2")]
+    #[arg(long, default_value = "lmz/candle-quantized-phi")]
+    pub tokenizer_id: String,
+
     #[arg(long,default_value="tokenizer.json")]
     pub tokenizer_file: String,
 

@@ -71,6 +71,11 @@ async fn main() ->anyhow::Result<()> {
     let args_init=Args::new();
 
     /**************************************************************/
+    // Initialize context for the interaction
+    /**************************************************************/
+    let context=r#""#;
+
+    /**************************************************************/
     // Model Selection Chain
     /**************************************************************/
     let llm_initialize: Box<dyn LLM>=   Box::new(LlmModel);

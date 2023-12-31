@@ -54,25 +54,32 @@ impl LLM for LlmModel {
         /**********************************************************************/
 
         /**********************************************************************/
-        // Retrieve Model Files
+        // Retrieve Model Files and Tokenizer
         /**********************************************************************/
         let start = std::time::Instant::now();
 
         let api = Api::new()?;
 
-        let repo = api.repo(Repo::with_revision(
+        let repo_model = api.repo(Repo::with_revision(
             args_init.model_id,
+            RepoType::Model,
+            args_init.revision.clone(),
+        ));
+
+        let model_filenames = get_filenames_model(&repo_model, args_init.weight_files, args_init.quantized, args_init.model_file)?;
+
+        let repo_tokenizer = api.repo(Repo::with_revision(
+            args_init.tokenizer_id,
             RepoType::Model,
             args_init.revision,
         ));
 
-        let tokenizer_filename = repo.get(args_init.tokenizer_file.as_str())?;
+        let tokenizer_filename = repo_tokenizer.get(args_init.tokenizer_file.as_str())?;
 
-        let filenames= get_filenames_model(&repo, args_init.weight_files, args_init.quantized,args_init.model_file)?;
         println!("retrieved the files in {:?}", start.elapsed());
 
         /**********************************************************************/
-        // End Retrieval Model Files
+        // End Retrieval Model Files and Tokenizer Files
         /**********************************************************************/
 
         /**********************************************************************/
@@ -86,10 +93,9 @@ impl LLM for LlmModel {
 
 
         let (model, device) = if args_init.quantized {
-            let filename = &filenames[0];
+            let filename = &model_filenames[0];
             let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
             let model = QMixFormer::new_v2(&config, vb)?;
-
             (Model::Quantized(model), Device::Cpu)
         } else {
             let device = device(args_init.cpu)?;
@@ -98,7 +104,7 @@ impl LLM for LlmModel {
             } else {
                 DType::F32
             };
-            let vb = unsafe { VarBuilder::from_mmaped_safetensors(&filenames, dtype, &device)? };
+            let vb = unsafe { VarBuilder::from_mmaped_safetensors(&model_filenames, dtype, &device)? };
             let model = MixFormer::new_v2(&config, vb)?;
             (Model::MixFormer(model), device)
         };
