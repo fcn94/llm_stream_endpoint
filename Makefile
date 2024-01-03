@@ -4,7 +4,7 @@ FEATURE := phi-v2
 MODEL_REPO :=
 # Enable to define a customized repo
 TOKENIZER_REPO :=
-# Enable to define a customized quantized model
+# Enable to define a customized quantized_llm model
 MODEL_FILE :=
 
 ifneq ($(MAKECMDGOALS),clean)

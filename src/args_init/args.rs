@@ -31,6 +31,8 @@ pub struct Args {
     #[arg(long, short = 'n', default_value_t = 200)]
     pub sample_len: usize,
 
+    ////////////////////////////////////////////////////////////////
+
     #[cfg(feature = "mistral")]
     #[arg(long, default_value = "lmz/candle-mistral")]
     pub model_id: String,
@@ -39,13 +41,22 @@ pub struct Args {
     //#[arg(long, default_value = "microsoft/phi-2")]
     #[arg(long, default_value = "lmz/candle-quantized-phi")]
     pub model_id: String,
+
+
+    ////////////////////////////////////////////////////////////////
 
     #[arg(long, default_value = "main")]
     pub revision: String,
 
-    //#[arg(long)]
+    #[cfg(feature = "phi-v2")]
     #[arg(long, default_value = "model-v2-q4k.gguf")]
     pub model_file: Option<String>,
+
+    #[cfg(feature = "mistral")]
+    #[arg(long, default_value = "model-q4k.gguf")]
+    pub model_file: Option<String>,
+
+    ////////////////////////////////////////////////////////////////
 
     #[cfg(feature = "mistral")]
     #[arg(long, default_value = "lmz/candle-mistral")]
@@ -56,8 +67,13 @@ pub struct Args {
     #[arg(long, default_value = "lmz/candle-quantized-phi")]
     pub tokenizer_id: String,
 
+
+    ////////////////////////////////////////////////////////////////
+
     #[arg(long,default_value="tokenizer.json")]
     pub tokenizer_file: String,
+
+    ////////////////////////////////////////////////////////////////
 
     #[arg(long)]
     pub weight_files: Option<String>,
@@ -72,6 +88,14 @@ pub struct Args {
     /// The context size to consider for the repeat penalty.
     #[arg(long, default_value_t = 64)]
     pub repeat_last_n: usize,
+
+    ////////////////////////////////////////////////////////////////
+
+    /// Group-Query Attention, use 8 for the 70B version of LLaMAv2.
+    #[arg(long)]
+    pub gqa: Option<usize>,
+
+
 }
 
 impl Args {
