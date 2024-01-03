@@ -43,7 +43,7 @@ pub trait LLM {
 }
 
 
-pub fn generate( llm_package:LlmPackage,prompt:&str,tx:UnboundedSender<String>) -> Result<()> {
+pub fn generate( llm_package:LlmPackage,prompt:&str,tx:UnboundedSender<String>,context:&str) -> Result<()> {
     let mut pipeline = TextGeneration::new(
         llm_package.model,
         llm_package.tokenizer,
@@ -54,6 +54,6 @@ pub fn generate( llm_package:LlmPackage,prompt:&str,tx:UnboundedSender<String>) 
         llm_package.repeat_last_n,
         &llm_package.device,
     );
-    pipeline.run(prompt, llm_package.sample_len,tx)?;
+    pipeline.run(prompt, llm_package.sample_len,tx,context)?;
     Ok(())
 }

@@ -73,7 +73,8 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Initialize context for the interaction
     /**************************************************************/
-    let context=r#""#;
+    let context=r#"You are an assistant that gives straight answers to given instructions"#;
+    let context=context.to_lowercase();
 
     /**************************************************************/
     // Model Selection Chain
@@ -103,10 +104,12 @@ async fn main() ->anyhow::Result<()> {
         .and(prompt_json_body())
         .map( move |prompt :Prompt| {
 
+
             // Create a new channel for each request
             let (tx, rx):(UnboundedSender<String>,UnboundedReceiver<String>)  = mpsc::unbounded_channel();
             let rx_stream = UnboundedReceiverStream::new(rx);
 
+            let context=context.clone();
             let llm_package_clone=llm_package.clone();
 
             // Clone the Arc for the closure
@@ -114,7 +117,7 @@ async fn main() ->anyhow::Result<()> {
 
             // Spawn a Tokio task in the dedicated runtime for this specific channel
             let _ = dedicated_runtime_clone.lock().unwrap().as_ref().unwrap().spawn(async move {
-                process_generation(llm_package_clone, prompt.query, tx).await;
+                process_generation(llm_package_clone, prompt.query, tx,context.to_lowercase()).await;
             });
 
             let event_stream = rx_stream.map(  move |token| {
@@ -155,6 +158,6 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
 /*****************************************************************/
 // This will call the generate method for appropriate llm model
 /*****************************************************************/
-async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSender<String>) {
-    let _ = generate(llm_package, prompt.as_str(),tx);
+async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSender<String>,context_string:String) {
+    let _ = generate(llm_package, prompt.as_str(),tx,context_string.as_str());
 }

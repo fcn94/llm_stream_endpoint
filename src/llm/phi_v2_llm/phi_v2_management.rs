@@ -38,14 +38,13 @@ impl TextGeneration {
         }
     }
 
-    pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>) -> Result<()> {
+    pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>,context:&str) -> Result<()> {
         use std::io::Write;
         self.tokenizer.clear();
 
-        // todo: Manage context
 
         // Text Generation Prompt for phi-2
-        let prompt=format!("Instruct: {}.\nOutput:",prompt);
+        let prompt=format!("Context:{}.\nInstruct: {}.\nOutput:",context,prompt);
 
 
         let mut tokens = self

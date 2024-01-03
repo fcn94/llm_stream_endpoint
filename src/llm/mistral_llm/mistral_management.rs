@@ -38,14 +38,12 @@ impl TextGeneration {
         }
     }
 
-    pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>) -> Result<()> {
+    pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>,context:&str) -> Result<()> {
         use std::io::Write;
         self.tokenizer.clear();
 
-        // todo: Manage context
-
         // Text Generation Prompt for Mistral
-        let prompt=format!("<s>[INST]{}.[/INST]",prompt);
+        let prompt=format!("<s>[INST]{}[/INST]",prompt);
 
         let mut tokens = self
             .tokenizer
