@@ -43,7 +43,7 @@ impl TextGeneration {
         self.tokenizer.clear();
 
         // Text Generation Prompt for Mistral
-        let prompt=format!("<s>[INST]{}[/INST]",prompt);
+        let prompt=format!("<s>[INST]{}[/INST]",prompt.trim());
 
         let mut tokens = self
             .tokenizer

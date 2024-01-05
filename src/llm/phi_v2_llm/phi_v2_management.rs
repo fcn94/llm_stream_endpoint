@@ -44,7 +44,7 @@ impl TextGeneration {
 
 
         // Text Generation Prompt for phi-2
-        let prompt=format!("Context:{}.\nInstruct: {}.\nOutput:",context,prompt);
+        let prompt=format!("Context:{}.\nInstruct: {}.\nOutput:",context.trim(),prompt.trim());
 
 
         let mut tokens = self
