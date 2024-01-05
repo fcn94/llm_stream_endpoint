@@ -1,0 +1,8 @@
+# This is a TOML document
+
+# Very Simple Config
+[prompt_config]
+# General purpose prompt
+context = "You are an assistant that gives straight answers to given instructions"
+# a  classifier prompt
+#context="Please classify a sentence into one of the three categories : Fashion , Electronics or General."

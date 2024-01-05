@@ -12,6 +12,7 @@ use tokio::sync::mpsc;
 use tokio::sync::mpsc::{ UnboundedReceiver, UnboundedSender};
 
 use std::{fs, thread};
+use std::process::exit;
 use std::sync::{Arc, Mutex};
 
 use bytes::{Bytes};
@@ -19,6 +20,9 @@ use bytes::{Bytes};
 use futures_util::{Stream, StreamExt};
 use hyper::Body;
 use serde::{Deserialize, Serialize};
+
+
+use toml;
 
 use llm_stream::args_init::args::Args;
 use llm_stream::llm::llm::{LLM, LlmPackage,generate};
@@ -36,6 +40,19 @@ const NB_WORKERS:usize = 4;
 #[derive(Serialize, Deserialize, Debug,Clone)]
 pub struct Prompt {
     pub query: String,
+}
+
+
+// Top level struct to hold the TOML data.
+#[derive(Deserialize)]
+struct Data {
+    prompt_config: Config,
+}
+
+// Config struct holds to data from the `[config]` section.
+#[derive(Deserialize)]
+struct Config {
+    context: String,
 }
 
 #[tokio::main]
@@ -73,8 +90,8 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Initialize context for the interaction
     /**************************************************************/
-    let context=r#"You are an assistant that gives straight answers to given instructions"#;
-    let context=context.to_lowercase();
+    let config_file_name=  "./config/prompt_config.toml";
+    let context=get_prompt_context(config_file_name).to_lowercase();
 
     /**************************************************************/
     // Model Selection Chain
@@ -160,4 +177,39 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
 /*****************************************************************/
 async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSender<String>,context_string:String) {
     let _ = generate(llm_package, prompt.as_str(),tx,context_string.as_str());
+}
+
+
+/*****************************************************************/
+// Retrieve the context of the prompt from toml file
+/*****************************************************************/
+fn get_prompt_context(config_file_name:&str) -> String {
+    let contents=match fs::read_to_string(config_file_name) {
+        // If successful return the files text as `contents`.
+        // `c` is a local variable.
+        Ok(c) => c,
+        // Handle the `error` case.
+        Err(_) => {
+            // Write `msg` to `stderr`.
+            eprintln!("Could not read file `{}`", config_file_name);
+            // Exit the program with exit code `1`.
+            exit(1);
+        }
+    };
+
+    let data: Data = match toml::from_str(&contents) {
+        // If successful, return data as `Data` struct.
+        // `d` is a local variable.
+        Ok(d) => d,
+        // Handle the `error` case.
+        Err(_) => {
+            // Write `msg` to `stderr`.
+            eprintln!("Unable to load data from `{}`", config_file_name);
+            // Exit the program with exit code `1`.
+            exit(1);
+        }
+    };
+
+    data.prompt_config.context
+
 }
