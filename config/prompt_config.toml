@@ -2,7 +2,15 @@
 
 # Very Simple Config
 [prompt_config]
-# General purpose prompt
+# General purpose context prompt
 context = "You are an assistant that gives straight answers to given instructions"
-# a  classifier prompt
+# a  Classifier context prompt
 #context="Please classify a sentence into one of the three categories : Fashion , Electronics or General."
+# a  SQL Expert context prompt
+#context="You are a SQL Expert, specialized in MySQL. You will be given a table schema, and you will be requested to get some information out of this table. You will construct appropriate and optimized SQL Query."
+# a  Math Expert context prompt
+#context="You are a MIT student and you became expert in solving elegantly mathematical problems."
+
+
+
+
