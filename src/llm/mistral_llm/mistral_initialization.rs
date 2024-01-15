@@ -3,22 +3,19 @@
 use std::path::PathBuf;
 use anyhow::{Error as E, Result};
 
-use candle_transformers::models::mistral::{Config, Model as Mistral};
+use candle_transformers::models::mistral::{Config};
 use candle_transformers::models::quantized_mistral::Model as QMistral;
 
-use candle::{DType, Device};
-use candle_nn::VarBuilder;
+use candle::{Device};
 use hf_hub::{api::sync::Api, Repo, RepoType};
 use hf_hub::api::sync::ApiRepo;
 use tokenizers::Tokenizer;
 use crate::args_init::args::Args;
-use crate::llm::device::device;
 use crate::llm::llm::{LLM, LlmPackage};
 
 
 #[derive(Debug, Clone)]
 pub enum Model {
-    Mistral(Mistral),
     Quantized(QMistral),
 }
 
@@ -87,21 +84,11 @@ impl LLM for LlmModel {
 
         let start = std::time::Instant::now();
         let config = Config::config_7b_v0_1(args_init.use_flash_attn);
-        let (model, device) = if args_init.quantized {
+        let (model, device) =  {
             let filename = &model_filenames[0];
             let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
             let model = QMistral::new(&config, vb)?;
             (Model::Quantized(model), Device::Cpu)
-        } else {
-            let device = device(args_init.cpu)?;
-            let dtype = if device.is_cuda() {
-                DType::BF16
-            } else {
-                DType::F32
-            };
-            let vb = unsafe { VarBuilder::from_mmaped_safetensors(&model_filenames, dtype, &device)? };
-            let model = Mistral::new(&config, vb)?;
-            (Model::Mistral(model), device)
         };
 
         println!("loaded the model in {:?}", start.elapsed());
@@ -129,14 +116,7 @@ fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:boo
             .map(std::path::PathBuf::from)
             .collect::<Vec<_>>(),
         None => {
-            if quantized {
                 vec![repo.get(model_file.unwrap().as_str())?]
-            } else {
-                vec![
-                    repo.get("pytorch_model-00001-of-00002.safetensors")?,
-                    repo.get("pytorch_model-00002-of-00002.safetensors")?,
-                ]
-            }
         }
     })
 }

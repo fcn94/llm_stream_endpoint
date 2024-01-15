@@ -12,7 +12,6 @@ use crate::llm::phi_v2_llm::phi_v2_initialization::{ Model};
 
 
 
-
 impl TextGeneration {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
@@ -39,9 +38,8 @@ impl TextGeneration {
     }
 
     pub(crate) fn run(&mut self, prompt: &str, sample_len: usize, tx:UnboundedSender<String>,context:&str) -> Result<()> {
-        use std::io::Write;
-        self.tokenizer.clear();
 
+        self.tokenizer.clear();
 
         // Text Generation Prompt for phi-2
         let prompt=format!("Context:{}.\nInstruct: {}.\nOutput:",context.trim(),prompt.trim());
@@ -77,7 +75,6 @@ impl TextGeneration {
 
 
             let logits = match &mut self.model {
-                Model::MixFormer(m) => m.forward(&input)?,
                 Model::Quantized(m) => m.forward(&input)?,
             };
             let logits = logits.squeeze(0)?.squeeze(0)?.to_dtype(DType::F32)?;

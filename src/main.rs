@@ -52,7 +52,10 @@ struct Data {
 // Config struct holds to data from the `[config]` section.
 #[derive(Deserialize)]
 struct Config {
-    context: String,
+    context_general: String,
+    context_classifier: String,
+    context_sql: String,
+    context_math: String,
 }
 
 #[tokio::main]
@@ -91,7 +94,7 @@ async fn main() ->anyhow::Result<()> {
     // Initialize context for the interaction
     /**************************************************************/
     let config_file_name=  "./config/prompt_config.toml";
-    let context=get_prompt_context(config_file_name).to_lowercase();
+    let context=get_prompt_context(config_file_name,args_init.context_type.clone()).to_lowercase();
 
     /**************************************************************/
     // Model Selection Chain
@@ -183,7 +186,7 @@ async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSe
 /*****************************************************************/
 // Retrieve the context of the prompt from toml file
 /*****************************************************************/
-fn get_prompt_context(config_file_name:&str) -> String {
+fn get_prompt_context(config_file_name:&str, context_type: String) -> String {
     let contents=match fs::read_to_string(config_file_name) {
         // If successful return the files text as `contents`.
         // `c` is a local variable.
@@ -210,6 +213,14 @@ fn get_prompt_context(config_file_name:&str) -> String {
         }
     };
 
-    data.prompt_config.context
+    match context_type.as_str() {
+        // If successful, return data as `Data` struct.
+        // `d` is a local variable.
+        "general" => data.prompt_config.context_general,
+        "classifier" => data.prompt_config.context_classifier,
+        "sql" => data.prompt_config.context_sql,
+        "math" => data.prompt_config.context_math,
+        _ => data.prompt_config.context_general,
+    }
 
 }

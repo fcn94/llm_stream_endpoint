@@ -6,6 +6,8 @@ MODEL_REPO :=
 TOKENIZER_REPO :=
 # Enable to define a customized quantized_llm model
 MODEL_FILE :=
+# Enable to select one of the context type : general, classifier, sql, math
+CONTEXT_TYPE :=
 
 ifneq ($(MAKECMDGOALS),clean)
 
@@ -21,10 +23,10 @@ endif
 run :
 	@if [ -n "$(MODEL_REPO)" -a -n "$(MODEL_FILE)" -a -n "$(TOKENIZER_REPO)"  ]; then \
   		echo "Building using Model Repo: $(MODEL_REPO) and Model file: $(MODEL_FILE) and Tokenizer Repo :  $(TOKENIZER_REPO) "; \
-		./target/release/llm_stream --quantized --temperature 0.1 --model-id=$(MODEL_REPO) --model-file=$(MODEL_FILE) --tokenizer-id=$(TOKENIZER_REPO); \
+		./target/release/llm_stream --quantized --temperature 0.1 --model-id=$(MODEL_REPO) --model-file=$(MODEL_FILE) --tokenizer-id=$(TOKENIZER_REPO) --context-type=$(CONTEXT_TYPE); \
     else \
        echo "Building using default Value for $(FEATURE)";\
-       ./target/release/llm_stream --quantized --temperature 0.1; \
+       ./target/release/llm_stream --quantized --temperature 0.1 --context-type=$(CONTEXT_TYPE); \
     fi
 
 clean :

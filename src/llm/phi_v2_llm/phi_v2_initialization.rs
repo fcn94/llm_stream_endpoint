@@ -4,23 +4,19 @@ use std::path::PathBuf;
 use anyhow::{Error as E, Result};
 
 
-use candle_transformers::models::mixformer::{Config, MixFormerSequentialForCausalLM as MixFormer};
+use candle_transformers::models::mixformer::Config;
 use candle_transformers::models::quantized_mixformer::MixFormerSequentialForCausalLM as QMixFormer;
 
-use candle::{DType, Device};
-use candle_nn::VarBuilder;
+use candle::{Device};
 use hf_hub::{api::sync::Api, Repo, RepoType};
 use hf_hub::api::sync::ApiRepo;
 use tokenizers::Tokenizer;
 use crate::args_init::args::Args;
-use crate::llm::device::device;
 use crate::llm::llm::{LLM, LlmPackage};
-
 
 
 #[derive(Debug, Clone)]
 pub enum Model {
-    MixFormer(MixFormer),
     Quantized(QMixFormer),
 }
 
@@ -92,22 +88,14 @@ impl LLM for LlmModel {
         let config = Config::v2();
 
 
-        let (model, device) = if args_init.quantized {
+        // We will only process quantized models
+        let (model, device) = {
             let filename = &model_filenames[0];
             let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
             let model = QMixFormer::new_v2(&config, vb)?;
             (Model::Quantized(model), Device::Cpu)
-        } else {
-            let device = device(args_init.cpu)?;
-            let dtype = if device.is_cuda() {
-                DType::BF16
-            } else {
-                DType::F32
-            };
-            let vb = unsafe { VarBuilder::from_mmaped_safetensors(&model_filenames, dtype, &device)? };
-            let model = MixFormer::new_v2(&config, vb)?;
-            (Model::MixFormer(model), device)
         };
+
 
         /**********************************************************************/
         // End Construction LLM Package
@@ -140,15 +128,7 @@ fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:boo
             .map(std::path::PathBuf::from)
             .collect::<Vec<_>>(),
         None => {
-            if quantized {
                 vec![repo.get(model_file.unwrap().as_str())?]
-            } else {
-                vec![
-                    repo.get("model-00001-of-00002.safetensors")?,
-                    repo.get("model-00002-of-00002.safetensors")?,
-                ]
-
             }
-        }
     })
 }

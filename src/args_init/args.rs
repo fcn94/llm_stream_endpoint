@@ -95,6 +95,10 @@ pub struct Args {
     #[arg(long)]
     pub gqa: Option<usize>,
 
+    ////////////////////////////////////////////////////////////////
+
+    #[arg(long, default_value = "general")]
+    pub context_type: String,
 
 }
 

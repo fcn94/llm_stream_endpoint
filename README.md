@@ -1,11 +1,11 @@
 # llm_stream_endpoint
-This repository is a minimal llm rust api streaming endpoint.
+Minimal llm rust api streaming endpoint.
 
 It is a  minimalist service to interact with a LLM, in a streaming mode.
 
-It is mainly designed to run mistral or phi-2 quantized model, on a CPU
+It is designed to run quantized version of mistral or phi-2 quantized model, on a CPU
 
-It is a very simple Rest Streaming Endpoint using :
+It is a very simple Rest Streaming API using :
 * Rust
 * Warp
 * Candle
