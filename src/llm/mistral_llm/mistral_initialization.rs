@@ -60,7 +60,7 @@ impl LLM for LlmModel {
             args_init.revision.clone(),
         ));
 
-        let model_filenames = get_filenames_model(&repo_model, args_init.weight_files, args_init.quantized, args_init.model_file)?;
+        let model_filenames = get_filenames_model(&repo_model, args_init.weight_files, args_init.model_file)?;
 
         let repo_tokenizer = api.repo(Repo::with_revision(
             args_init.tokenizer_id,
@@ -109,7 +109,7 @@ impl LLM for LlmModel {
 
 }
 
-fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, quantized:bool,model_file:Option<String>) -> Result<Vec<PathBuf>> {
+fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>,model_file:Option<String>) -> Result<Vec<PathBuf>> {
     Ok(match weight_files {
         Some(files) => files
             .split(',')

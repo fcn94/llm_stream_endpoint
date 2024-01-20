@@ -78,8 +78,6 @@ pub struct Args {
     #[arg(long)]
     pub weight_files: Option<String>,
 
-    #[arg(long,default_value_t=true)]
-    pub quantized: bool,
 
     /// Penalty to be applied for repeating tokens, 1. means no penalty.
     #[arg(long, default_value_t = 1.1)]
