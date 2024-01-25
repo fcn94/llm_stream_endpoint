@@ -89,6 +89,35 @@ If you want to run llm from gguf file of most popular repo, then you can go to t
 > https://github.com/fcn94/llm_stream_quantized_endpoint
 
 
+
+# You can  specify a context type ( general, sql, classifier, math)
+Four context prompts are defined in ./config/prompt_comfig.toml
+
+> You can type:
+>
+> for default ( general)
+> 
+> make run
+> 
+> or
+> 
+> for classifier
+> 
+> make run CONTEXT_TYPE=classifier
+> 
+> or
+> 
+> for sql
+> 
+> make run CONTEXT_TYPE=sql
+> 
+> or
+> 
+> for math
+> 
+> make run CONTEXT_TYPE=math
+
+
 # References
 * This is heavily inspired by one of the example from candle repository
 https://github.com/huggingface/candle/tree/main/candle-examples/examples/mistral
