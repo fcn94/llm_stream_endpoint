@@ -11,6 +11,7 @@ use hf_hub::{api::sync::Api, Repo, RepoType};
 use hf_hub::api::sync::ApiRepo;
 use tokenizers::Tokenizer;
 use crate::args_init::args::Args;
+use crate::llm::device::device;
 use crate::llm::llm::{LLM, LlmPackage};
 
 
@@ -84,9 +85,13 @@ impl LLM for LlmModel {
 
         let start = std::time::Instant::now();
         let config = Config::config_7b_v0_1(args_init.use_flash_attn);
+
+        // CPU
+        let device = device(true)?;
+
         let (model, device) =  {
             let filename = &model_filenames[0];
-            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename)?;
+            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename,&device)?;
             let model = QMistral::new(&config, vb)?;
             (Model::Quantized(model), Device::Cpu)
         };

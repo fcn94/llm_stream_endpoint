@@ -21,11 +21,20 @@ use futures_util::{Stream, StreamExt};
 use hyper::Body;
 use serde::{Deserialize, Serialize};
 
-
 use toml;
 
 use llm_stream::args_init::args::Args;
+
+
+#[cfg(not(feature = "llama"))]
 use llm_stream::llm::llm::{LLM, LlmPackage,generate};
+
+#[cfg(feature = "llama")]
+use llm_stream::llm::quantized_llm::{QuantizedLLM,QuantizedLlmPackage,generate};
+
+#[cfg(feature = "llama")]
+use llm_stream::llm::llama_llm::llama_initialization::QuantizedLlmModel;
+
 
 // todo: to be put under feature
 #[cfg(feature = "mistral")]
@@ -33,6 +42,7 @@ use llm_stream::llm::mistral_llm::mistral_initialization::{LlmModel};
 
 #[cfg(feature = "phi-v2")]
 use llm_stream::llm::phi_v2_llm::phi_v2_initialization::{LlmModel};
+
 
 
 const NB_WORKERS:usize = 4;
@@ -99,7 +109,11 @@ async fn main() ->anyhow::Result<()> {
     /**************************************************************/
     // Model Selection Chain
     /**************************************************************/
+    #[cfg(not(feature = "llama"))]
     let llm_initialize: Box<dyn LLM>=   Box::new(LlmModel);
+
+    #[cfg(feature = "llama")]
+        let llm_initialize: Box<dyn QuantizedLLM>=   Box::new(QuantizedLlmModel);
 
     /**************************************************************/
     // Initialization llm model
@@ -178,7 +192,13 @@ fn prompt_json_body() -> impl Filter<Extract = (Prompt,), Error = warp::Rejectio
 /*****************************************************************/
 // This will call the generate method for appropriate llm model
 /*****************************************************************/
+#[cfg(not(feature = "llama"))]
 async fn process_generation(llm_package:LlmPackage,prompt:String,tx: UnboundedSender<String>,context_string:String) {
+    let _ = generate(llm_package, prompt.as_str(),tx,context_string.as_str());
+}
+
+#[cfg(feature = "llama")]
+async fn process_generation(llm_package:QuantizedLlmPackage,prompt:String,tx: UnboundedSender<String>,context_string:String) {
     let _ = generate(llm_package, prompt.as_str(),tx,context_string.as_str());
 }
 

@@ -4,29 +4,24 @@ use std::path::PathBuf;
 use anyhow::{Error as E, Result};
 
 
-use candle_transformers::models::mixformer::Config;
-use candle_transformers::models::quantized_mixformer::MixFormerSequentialForCausalLM as QMixFormer;
-
 use candle::{Device};
+use candle::quantized::gguf_file;
+use candle_transformers::models::quantized_llama::ModelWeights;
 use hf_hub::{api::sync::Api, Repo, RepoType};
 use hf_hub::api::sync::ApiRepo;
 use tokenizers::Tokenizer;
 use crate::args_init::args::Args;
 use crate::llm::device::device;
-use crate::llm::llm::{LLM, LlmPackage};
-
-
-#[derive(Debug, Clone)]
-pub enum Model {
-    Quantized(QMixFormer),
-}
+use crate::llm::quantized_llm::{QuantizedLLM, QuantizedLlmPackage};
 
 
 
-pub struct LlmModel;
 
-impl LLM for LlmModel {
-    fn initialize(&self, args_init: Args) -> Result<LlmPackage> {
+
+pub struct QuantizedLlmModel;
+
+impl QuantizedLLM for QuantizedLlmModel {
+    fn initialize(&self, args_init: Args) -> Result<QuantizedLlmPackage> {
 
         /**********************************************************************/
         // Tracing Initialization
@@ -63,7 +58,7 @@ impl LLM for LlmModel {
             args_init.revision.clone(),
         ));
 
-        let model_filenames = get_filenames_model(&repo_model, args_init.weight_files, args_init.model_file)?;
+        let model_filenames = get_filenames_model(&repo_model, args_init.local_model_file, args_init.model_file)?;
 
         let repo_tokenizer = api.repo(Repo::with_revision(
             args_init.tokenizer_id,
@@ -87,31 +82,42 @@ impl LLM for LlmModel {
 
         let start = std::time::Instant::now();
 
+
+        let model_path = model_filenames[0].clone();
+
+
+        let mut file = std::fs::File::open(&model_path)?;
+
+        let gguf_model_content = gguf_file::Content::read(&mut file).map_err(|e| e.with_path(model_path))?;
+        let mut total_size_in_bytes = 0;
+        for (_, tensor) in gguf_model_content.tensor_infos.iter() {
+            let elem_count = tensor.shape.elem_count();
+            total_size_in_bytes +=
+                elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.blck_size();
+        }
+
+        println!(
+            "loaded {:?} tensors ({}) in {:.2}s",
+            gguf_model_content.tensor_infos.len(),
+            &format_size(total_size_in_bytes),
+            start.elapsed().as_secs_f32(),
+        );
+
         // CPU
         let device = device(true)?;
 
-        let config = Config::v2();
-
-
-        // We will only process quantized models
-        let (model, device) = {
-            let filename = &model_filenames[0];
-            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename,&device)?;
-            let model = QMixFormer::new_v2(&config, vb)?;
-            (Model::Quantized(model), Device::Cpu)
-        };
+        let (model_weights, device) = (ModelWeights::from_gguf(gguf_model_content, &mut file, &device)?, Device::Cpu);
 
 
         /**********************************************************************/
         // End Construction LLM Package
         /**********************************************************************/
 
-
-
         println!("loaded the model in {:?}", start.elapsed());
 
-        Ok(LlmPackage {
-            model,
+        Ok(QuantizedLlmPackage {
+            model_type:args_init.model_type,
+            model_weights,
             device,
             tokenizer,
             seed: args_init.seed,
@@ -122,18 +128,22 @@ impl LLM for LlmModel {
             sample_len: args_init.sample_len,
         })
     }
-
-
 }
 
-fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>, model_file:Option<String>) -> Result<Vec<PathBuf>> {
-    Ok(match weight_files {
-        Some(files) => files
-            .split(',')
-            .map(std::path::PathBuf::from)
-            .collect::<Vec<_>>(),
-        None => {
-                vec![repo.get(model_file.unwrap().as_str())?]
-            }
-    })
+fn get_filenames_model(repo:&ApiRepo, weight_files:Option<String>,model_file:Option<String>) -> Result<Vec<PathBuf>> {
+    Ok( vec![repo.get(model_file.unwrap().as_str())?])
+}
+
+
+
+fn format_size(size_in_bytes: usize) -> String {
+    if size_in_bytes < 1_000 {
+        format!("{}B", size_in_bytes)
+    } else if size_in_bytes < 1_000_000 {
+        format!("{:.2}KB", size_in_bytes as f64 / 1e3)
+    } else if size_in_bytes < 1_000_000_000 {
+        format!("{:.2}MB", size_in_bytes as f64 / 1e6)
+    } else {
+        format!("{:.2}GB", size_in_bytes as f64 / 1e9)
+    }
 }

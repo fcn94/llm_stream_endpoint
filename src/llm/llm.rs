@@ -14,7 +14,6 @@ use crate::llm::mistral_llm::mistral_initialization::Model;
 use crate::llm::phi_v2_llm::phi_v2_initialization::Model;
 
 
-
 #[derive( Debug,Clone)]
 pub struct LlmPackage {
     pub model:Model,

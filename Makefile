@@ -17,17 +17,25 @@ endif
 
 build :
 ifeq ($(FEATURE), phi-v2)
+	echo "Building using default Value for $(FEATURE)";\
 	cargo build --release --features phi-v2
 else
+	echo "Building using default Value for $(FEATURE)";\
 	cargo build --release --features mistral
+endif
+
+build_llama :
+ifeq ($(FEATURE), llama)
+	echo "Building using default Value for $(FEATURE)";\
+	cargo build --release --features llama
 endif
 
 run :
 	@if [ -n "$(MODEL_REPO)" -a -n "$(MODEL_FILE)" -a -n "$(TOKENIZER_REPO)"  ]; then \
-  		echo "Building using Model Repo: $(MODEL_REPO) and Model file: $(MODEL_FILE) and Tokenizer Repo :  $(TOKENIZER_REPO) "; \
+  		echo "Running using Model Repo: $(MODEL_REPO) and Model file: $(MODEL_FILE) and Tokenizer Repo :  $(TOKENIZER_REPO) "; \
 		./target/release/llm_stream  --temperature 0.1 --model-id=$(MODEL_REPO) --model-file=$(MODEL_FILE) --tokenizer-id=$(TOKENIZER_REPO) --context-type=$(CONTEXT_TYPE); \
     else \
-       echo "Building using default Value for $(FEATURE)";\
+       echo "Running using default Value for $(FEATURE)";\
        ./target/release/llm_stream  --temperature 0.1 --context-type=$(CONTEXT_TYPE); \
     fi
 

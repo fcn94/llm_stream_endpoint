@@ -42,6 +42,13 @@ pub struct Args {
     #[arg(long, default_value = "lmz/candle-quantized-phi")]
     pub model_id: String,
 
+    #[cfg(feature = "llama")]
+    #[arg(long, default_value = "mistral")]
+    pub model_type: String,
+
+    #[cfg(feature = "llama")]
+    #[arg(long, default_value = "TheBloke/MetaMath-Cybertron-Starling-GGUF")]
+    pub model_id: String,
 
     ////////////////////////////////////////////////////////////////
 
@@ -56,6 +63,10 @@ pub struct Args {
     #[arg(long, default_value = "model-q4k.gguf")]
     pub model_file: Option<String>,
 
+    #[cfg(feature = "llama")]
+    #[arg(long, default_value = "metamath-cybertron-starling.Q4_K_M.gguf")]
+    pub model_file: Option<String>,
+
     ////////////////////////////////////////////////////////////////
 
     #[cfg(feature = "mistral")]
@@ -68,10 +79,24 @@ pub struct Args {
     pub tokenizer_id: String,
 
 
+    #[cfg(feature = "llama")]
+    #[arg(long, default_value = "mistralai/Mistral-7B-Instruct-v0.2")]
+    pub tokenizer_id: String,
+
     ////////////////////////////////////////////////////////////////
 
     #[arg(long,default_value="tokenizer.json")]
     pub tokenizer_file: String,
+
+    ////////////////////////////////////////////////////////////////
+
+    /// Future use, to be able to use a local model file
+    #[arg(long)]
+    pub local_model_file: Option<String>,
+
+    /// Future use, to be able to use a local tokenizer file
+    #[arg(long)]
+    pub local_tokenizer_file: Option<String>,
 
     ////////////////////////////////////////////////////////////////
 
@@ -107,3 +132,4 @@ impl Args {
         args_init
     }
 }
+

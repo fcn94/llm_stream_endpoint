@@ -6,14 +6,14 @@ edition = "2021"
 
 [dependencies]
 # for candle
-candle={git="https://github.com/huggingface/candle.git" ,branch='main', package = "candle-core"}
-candle-nn = { git="https://github.com/huggingface/candle.git",branch='main' }
-candle-transformers = { git="https://github.com/huggingface/candle.git" ,branch='main' }
+candle={git="https://github.com/huggingface/candle.git" ,branch='main', package = "candle-core",  version = "0.3.3"}
+candle-nn = { git="https://github.com/huggingface/candle.git",branch='main' , version = "0.3.3"}
+candle-transformers = { git="https://github.com/huggingface/candle.git" ,branch='main' , version = "0.3.3"}
 #candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='main', optional = true }
 
 # for huggingface
 hf-hub = { version="0.3.0", features=["tokio"]}
-tokenizers = { version = "0.13.4", default-features = false ,features = ["onig"]}
+tokenizers = { version = "0.15", default-features = false ,features = ["onig"]}
 
 # for acceleration
 #accelerate-src = { version = "0.3.2" , optional = true}
@@ -78,6 +78,7 @@ serde_json = "1.0"
 default = []
 mistral = []
 phi-v2 = []
+llama = []
 #accelerate = ["dep:accelerate-src", "candle/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
 #mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
 #cuda = ["candle/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
