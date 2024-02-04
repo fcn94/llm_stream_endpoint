@@ -17,7 +17,7 @@ tokenizers = { version = "0.15", default-features = false ,features = ["onig"]}
 
 # for acceleration
 #accelerate-src = { version = "0.3.2" , optional = true}
-#intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
+intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
 # for mkl feature
 #libc = { version = "0.2.147" }
 #cudarc = { version = "0.9.14", features = ["f16"],optional=true }
@@ -80,7 +80,7 @@ mistral = []
 phi-v2 = []
 llama = []
 #accelerate = ["dep:accelerate-src", "candle/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
-#mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
+mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
 #cuda = ["candle/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
 #cudnn = ["candle/cudnn"]
 #flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
