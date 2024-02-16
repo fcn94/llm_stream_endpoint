@@ -93,7 +93,7 @@ impl QuantizedLLM for QuantizedLlmModel {
         for (_, tensor) in gguf_model_content.tensor_infos.iter() {
             let elem_count = tensor.shape.elem_count();
             total_size_in_bytes +=
-                elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.blck_size();
+                elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.block_size();
         }
 
         println!(
