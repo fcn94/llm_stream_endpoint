@@ -9,7 +9,7 @@ edition = "2021"
 candle={git="https://github.com/huggingface/candle.git" ,branch='main', package = "candle-core"}
 candle-nn = { git="https://github.com/huggingface/candle.git",branch='main' }
 candle-transformers = { git="https://github.com/huggingface/candle.git" ,branch='main' }
-#candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='main', optional = true }
+candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='main', optional = true }
 
 # for huggingface
 hf-hub = { version="0.3.0", features=["tokio"]}
@@ -20,12 +20,13 @@ tokenizers = { version = "0.15", default-features = false ,features = ["onig"]}
 intel-mkl-src = { version = "0.8.1", features = ["mkl-static-lp64-iomp"] , optional = true}
 # for mkl feature
 #libc = { version = "0.2.147" }
-#cudarc = { version = "0.9.14", features = ["f16"],optional=true }
 
-#half = { version = "2.3.1", features = ["num-traits", "use-intrinsics", "rand_distr"],optional=true }
-#rayon = "1.7.0"
-#safetensors = "0.3.1"
-#num-traits = "0.2.15"
+cudarc = { version = "0.9.14", features = ["f16"],optional=true }
+
+half = { version = "2.3.1", features = ["num-traits", "use-intrinsics", "rand_distr"],optional=true }
+rayon = "1.7.0"
+safetensors = "0.3.1"
+num-traits = "0.2.15"
 
 
 # for warp layer
@@ -53,7 +54,7 @@ serde_json = "1.0"
 
 
 [dev-dependencies]
-#anyhow = { version = "1", features = ["backtrace"] }
+anyhow = { version = "1", features = ["backtrace"] }
 #tokio = "1.29.1"
 #byteorder = "1.4.3"
 #gemm = { version = "0.16.15", features = ["wasm-simd128-enable"] }
@@ -72,6 +73,9 @@ serde_json = "1.0"
 #zip = { version = "0.6.6", default-features = false }
 #metal = { version = "0.27.1", features = ["mps"], package="candle-metal" }
 
+[build-dependencies]
+anyhow = { version = "1", features = ["backtrace"] }
+bindgen_cuda = { version = "0.1.1", optional = true }
 
 
 [features]
@@ -81,7 +85,7 @@ phi-v2 = []
 llama = []
 #accelerate = ["dep:accelerate-src", "candle/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
 mkl = ["dep:intel-mkl-src", "candle/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
-#cuda = ["candle/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
-#cudnn = ["candle/cudnn"]
-#flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
-#nccl = ["cuda", "cudarc/nccl", "dep:half"]
+cuda = ["candle/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
+cudnn = ["candle/cudnn"]
+flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
+nccl = ["cuda", "cudarc/nccl", "dep:half"]

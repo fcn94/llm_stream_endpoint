@@ -28,8 +28,9 @@ pub struct Args {
     pub seed: u64,
 
     /// The length of the sample to generate (in tokens).
-    #[arg(long, short = 'n', default_value_t = 200)]
+    #[arg(long, short = 'n', default_value_t = 2000)]
     pub sample_len: usize,
+
 
     ////////////////////////////////////////////////////////////////
 

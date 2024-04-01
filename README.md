@@ -31,19 +31,38 @@ It is a very simple Rest Streaming API using :
 To build the service , just type
 > With Phi-2 , type :
 > 
-> *make build*
+> * to build for CPU
 > 
-> or
+>> *make build* 
 > 
-> With mistral, type :
+> * to build using CUDA 
 > 
-> *make FEATURE=mistral build*
+>> *make build_cuda*
 > 
-> or
+> \
+> \
+> or with mistral, type :
+> 
+>  * to build for CPU
+> 
+>> *make FEATURE=mistral build* 
+> 
+> * to build using CUDA
 >
-> With llama, type :
+>> *make FEATURE=mistral build_cuda*
+> 
+> \
+> \
+> or With llama, type :
 >
-> *make FEATURE=llama build*
+> * to build for CPU
+>
+>> *make FEATURE=llama build*
+> 
+> * to build using CUDA
+>
+>> *make FEATURE=llama build_cuda*
+
 
 \
 \

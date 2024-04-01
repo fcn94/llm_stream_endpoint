@@ -1,5 +1,7 @@
 FEATURE := phi-v2
 
+
+
 # Enable to define a customized repo
 MODEL_REPO :=
 # Enable to define a customized repo
@@ -30,6 +32,18 @@ else ifeq ($(FEATURE), llama)
     cargo build --release --features llama
 endif
 
+build_cuda :
+ifeq ($(FEATURE), phi-v2)
+	echo "Building using default Value for $(FEATURE)";\
+	cargo build --release --features phi-v2 --features cuda
+else ifeq ($(FEATURE), mistral)
+	echo "Building using default Value for $(FEATURE)";\
+	cargo build --release --features mistral --features cuda
+else ifeq ($(FEATURE), llama)
+	echo "Building using default Value for $(FEATURE)";\
+    cargo build --release --features llama --features cuda
+endif
+
 
 # run based on files from huggingface
 run :
@@ -57,4 +71,3 @@ clean :
 
 update :
 	cargo update
-

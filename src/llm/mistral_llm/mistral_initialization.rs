@@ -14,7 +14,6 @@ use crate::args_init::args::Args;
 use crate::llm::device::device;
 use crate::llm::llm::{LLM, LlmPackage};
 
-
 #[derive(Debug, Clone)]
 pub enum Model {
     Quantized(QMistral),
@@ -84,8 +83,10 @@ impl LLM for LlmModel {
         let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;
 
         let start = std::time::Instant::now();
+
         let config = Config::config_7b_v0_1(args_init.use_flash_attn);
 
+        /*
         // CPU
         let device = device(true)?;
 
@@ -95,12 +96,27 @@ impl LLM for LlmModel {
             let model = QMistral::new(&config, vb)?;
             (Model::Quantized(model), Device::Cpu)
         };
+        */
+
+
+        // We will only process quantized models
+        let (model, device_model) = {
+            // putting CUDA by default. to be optimized
+            let device_model = device(false)?;
+            let filename = &model_filenames[0];
+            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename,&device_model)?;
+            let model = QMistral::new(&config, vb)?;
+
+            (Model::Quantized(model), device_model)
+        };
+
+
 
         println!("loaded the model in {:?}", start.elapsed());
 
         Ok(LlmPackage {
             model,
-            device,
+            device:device_model,
             tokenizer,
             seed: args_init.seed,
             temperature: args_init.temperature,

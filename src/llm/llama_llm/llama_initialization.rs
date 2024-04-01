@@ -103,10 +103,16 @@ impl QuantizedLLM for QuantizedLlmModel {
             start.elapsed().as_secs_f32(),
         );
 
+        /*
         // CPU
         let device = device(true)?;
 
         let (model_weights, device) = (ModelWeights::from_gguf(gguf_model_content, &mut file, &device)?, Device::Cpu);
+        */
+
+        let device_model = device(false)?;
+        let (model_weights, device_model) = (ModelWeights::from_gguf(gguf_model_content, &mut file, &device_model)?, Device::Cpu);
+
 
 
         /**********************************************************************/
@@ -118,7 +124,7 @@ impl QuantizedLLM for QuantizedLlmModel {
         Ok(QuantizedLlmPackage {
             model_type:args_init.model_type,
             model_weights,
-            device,
+            device:device_model,
             tokenizer,
             seed: args_init.seed,
             temperature: args_init.temperature,
