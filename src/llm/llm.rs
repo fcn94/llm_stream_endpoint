@@ -31,7 +31,10 @@ pub struct LlmPackage {
 pub struct TextGeneration {
     pub model: Model,
     pub device: Device,
+    #[cfg(not(feature = "phi-v2"))]
     pub tokenizer: TokenOutputStream,
+    #[cfg(feature = "phi-v2")]
+    pub tokenizer: Tokenizer,
     pub logits_processor: LogitsProcessor,
     pub repeat_penalty: f32,
     pub repeat_last_n: usize,

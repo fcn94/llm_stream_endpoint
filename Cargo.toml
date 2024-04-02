@@ -14,6 +14,8 @@ candle-flash-attn = { git="https://github.com/huggingface/candle.git", branch='m
 # for huggingface
 hf-hub = { version="0.3.0", features=["tokio"]}
 tokenizers = { version = "0.15", default-features = false ,features = ["onig"]}
+#tokenizers = { version = "0.15.0", default-features = false }
+
 
 # for acceleration
 #accelerate-src = { version = "0.3.2" , optional = true}

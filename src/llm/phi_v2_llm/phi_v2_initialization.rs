@@ -87,23 +87,6 @@ impl LLM for LlmModel {
 
         let start = std::time::Instant::now();
 
-        // Previous version
-        /*
-        // CPU
-        let device = device(true)?;
-
-        let config = Config::v2();
-
-
-        // We will only process quantized models
-        let (model, device) = {
-            let filename = &model_filenames[0];
-            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename,&device)?;
-            let model = QMixFormer::new_v2(&config, vb)?;
-            (Model::Quantized(model), Device::Cpu)
-        };
-        */
-        ///////////////////////////////////////////////
 
         let config = Config::v2();
 

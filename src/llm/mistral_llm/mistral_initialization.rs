@@ -86,17 +86,6 @@ impl LLM for LlmModel {
 
         let config = Config::config_7b_v0_1(args_init.use_flash_attn);
 
-        /*
-        // CPU
-        let device = device(true)?;
-
-        let (model, device) =  {
-            let filename = &model_filenames[0];
-            let vb = candle_transformers::quantized_var_builder::VarBuilder::from_gguf(filename,&device)?;
-            let model = QMistral::new(&config, vb)?;
-            (Model::Quantized(model), Device::Cpu)
-        };
-        */
 
 
         // We will only process quantized models
